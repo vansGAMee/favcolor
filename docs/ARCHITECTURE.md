@@ -7,17 +7,17 @@ The Vite/React client is the whole product. `useColorModel` coordinates UI state
 ## Numeric core
 
 - `color/`: standard OKLab/OKLCH ↔ sRGB conversion, gamut mapping by bounded chroma search, OKLab distance, and the six-dimensional network feature map.
-- `ml/online/`: the production shared-utility ensemble: three `6→12→8→1` tanh MLPs backed by `Float64Array`, deterministic Xavier-like initialization, exact pair-loss backpropagation, and two Adam updates per member per click.
+- `ml/core/`: a shared-utility `6→24→16→1` tanh MLP backed by `Float64Array`; deterministic Xavier-like initialization; exact pair-loss backpropagation.
 - `ml/optimizer/`: custom Adam with bias correction, gradient clipping, and finite-value protection.
-- `ml/ensemble/`: the frozen former five-model baseline, retained for validation and reproducible benchmarks.
-- `ml/activeLearning/`: gamut-safe candidate generation. Production normal pairs use the long-term winner's uniform policy; scheduled repeated controls and local challenges remain available.
+- `ml/ensemble/`: five independently seeded models with bootstrap omission differences. Disagreement is variance among pair probabilities, never raw utilities.
+- `ml/activeLearning/`: early gamut coverage followed by ambiguity, ensemble disagreement, novelty, bounded distance, and high-utility contender challenges.
 - `ml/preference/search`: broad gamut-safe sampling, multiple top regions, local stochastic refinement, ensemble-member maxima, and mean OKLab optimum spread. Boundary colors remain eligible.
 - `ml/validation/`: chronological folds, quadratic-OKLab Bradley–Terry baseline, held-out log-loss/accuracy/Brier, and independently calibrated context/drift residual gates.
 - `ml/simulation/`: deterministic, independent synthetic oracles used only by tests/calibration.
 
 ## Persistence
 
-IndexedDB has `choices`, `snapshots`, and `meta` stores. A snapshot is replaced only by a later snapshot on the same calendar day. Serialized weights contain architecture/version metadata. Old five-model state is migrated safely by rebuilding the compact ensemble from preserved chronological choices. JSON import rejects unsupported schema versions before replacing data.
+IndexedDB has `choices`, `snapshots`, and `meta` stores. Choices are immutable event records. A snapshot is replaced only by a later snapshot on the same calendar day. Serialized weights contain architecture/version metadata. JSON import rejects unsupported schema versions before replacing data.
 
 ## Presentation
 

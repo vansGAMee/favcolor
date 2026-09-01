@@ -17,12 +17,6 @@ export interface ChoiceEvent {
   modelVersion: number
   pairType: PairType
   distance: number
-  predictedProbabilityBeforeChoice?: number
-  estimatedOptimumBeforeChoice?: OKLCH
-  estimatedOptimumAfterChoice?: OKLCH
-  modelStateBeforeChoice?: ModelState
-  modelStateAfterChoice?: ModelState
-  modelConfig?: { class: string; architecture: number[]; ensembleMembers: number; updateSchedule: string }
 }
 
 export interface ValidationMetrics {

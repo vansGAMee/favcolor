@@ -1,13 +1,12 @@
 import type { OKLCH } from '../../app/types'
 import { gamutMap, oklabDistance } from '../../color/color'
 import { generateCandidatePool } from '../activeLearning/candidates'
+import type { PreferenceEnsemble } from '../ensemble/ensemble'
 import { seededRandom } from '../simulation/oracle'
 
 export type OptimumResult = OKLCH & { spread: number; memberOptima: OKLCH[]; distanceTo: (color: OKLCH) => number }
 
-type PreferenceSurface = { models: readonly unknown[]; utility(color: OKLCH, modelIndex?: number): number }
-
-export function searchOptimum(ensemble: PreferenceSurface, candidateCount = 1200, seed = 1): OptimumResult {
+export function searchOptimum(ensemble: PreferenceEnsemble, candidateCount = 1200, seed = 1): OptimumResult {
   const pool = generateCandidatePool(candidateCount, seed)
   const memberOptima = ensemble.models.map((_, modelIndex) => pool.reduce((best, color) => ensemble.utility(color, modelIndex) > ensemble.utility(best, modelIndex) ? color : best, pool[0]))
   const top = [...pool].sort((a, b) => ensemble.utility(b) - ensemble.utility(a)).slice(0, 10)

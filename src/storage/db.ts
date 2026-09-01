@@ -31,7 +31,6 @@ export class ColorDatabase {
   }
 
   addChoice(choice: ChoiceEvent) { return this.request('choices', 'readwrite', store => store.add(choice)) }
-  saveChoice(choice: ChoiceEvent) { return this.request('choices', 'readwrite', store => store.put(choice)) }
   getChoices() { return this.request<ChoiceEvent[]>('choices', 'readonly', store => store.getAll()) }
   saveSnapshot(snapshot: DailySnapshot) { return this.request('snapshots', 'readwrite', store => store.put(snapshot)) }
   getSnapshots() { return this.request<DailySnapshot[]>('snapshots', 'readonly', store => store.getAll()) }

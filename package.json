@@ -10,13 +10,6 @@
     "test:e2e": "playwright test",
     "calibrate": "vite-node scripts/calibrate-validation.ts",
     "benchmark": "vite-node scripts/benchmark-learning.ts",
-    "benchmark:development": "vite-node scripts/release-development.ts",
-    "benchmark:final": "vite-node scripts/release-final.ts",
-    "benchmark:neural-development": "vite-node scripts/release-neural-development.ts",
-    "benchmark:neural-policy": "vite-node scripts/release-neural-policy-development.ts",
-    "benchmark:neural-final": "vite-node scripts/release-neural-final-cycle-2.ts",
-    "benchmark:long-term-development": "vite-node scripts/release-long-term-development.ts",
-    "benchmark:long-term-system": "vite-node scripts/release-long-term-system-development.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc -b && vite build"
   },

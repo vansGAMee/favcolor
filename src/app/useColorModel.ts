@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChoiceEvent, DailySnapshot, ModelState, OKLCH, TrainingExample, ValidationMetrics } from './types'
 import { colorToHex, gamutMap, oklabDistance } from '../color/color'
 import { generateCandidatePool } from '../ml/activeLearning/candidates'
-import { NeuralEnsemble } from '../ml/online/neuralStrategies'
-import { seededRandom } from '../ml/simulation/oracle'
+import { selectActivePair } from '../ml/activeLearning/select'
+import { PreferenceEnsemble } from '../ml/ensemble/ensemble'
 import { searchOptimum } from '../ml/preference/search'
 import { evaluateFactors, rollingValidation } from '../ml/validation/validation'
 import { assessReadiness } from '../ml/validation/readiness'
@@ -23,7 +23,7 @@ function asTraining(choice: ChoiceEvent): TrainingExample {
   }
 }
 
-function pairFor(ensemble: NeuralEnsemble, choices: ChoiceEvent[], typeOverride?: ChoiceEvent['pairType']): DisplayPair {
+function pairFor(ensemble: PreferenceEnsemble, choices: ChoiceEvent[], typeOverride?: ChoiceEvent['pairType']): DisplayPair {
   let canonical: readonly [OKLCH, OKLCH]
   let type: ChoiceEvent['pairType'] = typeOverride ?? 'normal'
   if (choices.length > 3 && choices.length % 11 === 10) {
@@ -36,11 +36,7 @@ function pairFor(ensemble: NeuralEnsemble, choices: ChoiceEvent[], typeOverride?
     canonical = [{ l: optimum.l, c: optimum.c, h: optimum.h }, competitor]
     type = 'local-challenge'
   } else {
-    const random = seededRandom(choices.length * 7919 + 17)
-    const first = Math.floor(random() * pool.length)
-    let second = Math.floor(random() * pool.length)
-    if (second === first) second = (second + 1) % pool.length
-    canonical = [pool[first], pool[second]]
+    canonical = selectActivePair(ensemble, pool, choices.flatMap(choice => [choice.colorA, choice.colorB]), choices.length * 7919 + 17)
     if (choices.length > 5 && choices.length % 7 === 6) type = 'validation'
   }
   const swap = crypto.getRandomValues(new Uint8Array(1))[0] % 2 === 0
@@ -48,7 +44,7 @@ function pairFor(ensemble: NeuralEnsemble, choices: ChoiceEvent[], typeOverride?
 }
 
 export function useColorModel() {
-  const ensembleRef = useRef(new NeuralEnsemble(611, [6, 12, 8, 1], 3, 2, .003))
+  const ensembleRef = useRef(new PreferenceEnsemble(611))
   const appStart = useRef(Date.now())
   const [choices, setChoices] = useState<ChoiceEvent[]>([])
   const [snapshots, setSnapshots] = useState<DailySnapshot[]>([])
@@ -67,11 +63,8 @@ export function useColorModel() {
       const storedChoices = (await db.getChoices()).sort((a, b) => a.timestamp - b.timestamp)
       const storedSnapshots = await db.getSnapshots()
       const serialized = await db.getModel()
-      if (serialized && typeof serialized === 'object' && (serialized as { kind?: string }).kind === 'compact-neural-ensemble') ensembleRef.current = NeuralEnsemble.deserialize(serialized as ReturnType<NeuralEnsemble['serialize']>)
-      else if (storedChoices.length) {
-        ensembleRef.current = new NeuralEnsemble(611, [6, 12, 8, 1], 3, 2, .003)
-        for (const choice of storedChoices) ensembleRef.current.update(asTraining(choice))
-      }
+      if (Array.isArray(serialized) && serialized.length === 5) ensembleRef.current = new PreferenceEnsemble(611, serialized as never)
+      else if (storedChoices.length) ensembleRef.current.train(storedChoices.map(asTraining), 10)
       const optimum = searchOptimum(ensembleRef.current, 500, storedChoices.length + 1)
       const validation = rollingValidation(storedChoices.map(asTraining))
       setChoices(storedChoices)
@@ -95,16 +88,11 @@ export function useColorModel() {
     setBusy(true)
     const canonicalChosen: 'a' | 'b' = displayedIndex === 0 ? pair.leftColor : pair.leftColor === 'a' ? 'b' : 'a'
     const now = new Date()
-    const modelStateBeforeChoice = assessReadiness(choices, metrics, spread).state
     const event: ChoiceEvent = {
       id: crypto.randomUUID(), colorA: pair.canonical[0], colorB: pair.canonical[1], chosen: canonicalChosen,
       timestamp: now.getTime(), localHour: now.getHours(), weekday: now.getDay(), elapsedSinceStartMs: now.getTime() - appStart.current,
-      reactionTimeMs: Math.max(0, performance.now() - pair.startedAt), leftColor: pair.leftColor, modelVersion: 2, pairType: pair.type,
+      reactionTimeMs: Math.max(0, performance.now() - pair.startedAt), leftColor: pair.leftColor, modelVersion: 1, pairType: pair.type,
       distance: oklabDistance(pair.canonical[0], pair.canonical[1]),
-      predictedProbabilityBeforeChoice: ensembleRef.current.probability(pair.canonical[0], pair.canonical[1]),
-      estimatedOptimumBeforeChoice: { l: estimate.l, c: estimate.c, h: estimate.h },
-      modelStateBeforeChoice,
-      modelConfig: { class: 'compact-neural-mlp-ensemble', architecture: [6, 12, 8, 1], ensembleMembers: 3, updateSchedule: '2 online Adam updates per member per click; newest example' },
     }
     const nextChoices = [...choices, event]
     setChoices(nextChoices)
@@ -112,7 +100,7 @@ export function useColorModel() {
     try {
       await db.addChoice(event)
       await new Promise<void>(resolve => setTimeout(resolve, 0))
-      ensembleRef.current.update(asTraining(event))
+      ensembleRef.current.train([asTraining(event)], choices.length < 20 ? 7 : 4)
       setPair(pairFor(ensembleRef.current, nextChoices))
       await new Promise<void>(resolve => setTimeout(resolve, 0))
       const optimum = searchOptimum(ensembleRef.current, 520, nextChoices.length + 101)
@@ -121,7 +109,6 @@ export function useColorModel() {
       const date = now.toLocaleDateString('en-CA')
       const snapshotColor: OKLCH = { l: optimum.l, c: optimum.c, h: optimum.h }
       const snapshot: DailySnapshot = { date, color: snapshotColor, hex: colorToHex(snapshotColor), state: modelState, totalChoices: nextChoices.length, validation }
-      await db.saveChoice({ ...event, estimatedOptimumAfterChoice: snapshotColor, modelStateAfterChoice: modelState })
       await db.saveModel(ensembleRef.current.serialize())
       await db.saveSnapshot(snapshot)
       const nextSnapshots = [...snapshots.filter(item => item.date !== date), snapshot].sort((a, b) => a.date.localeCompare(b.date))
@@ -144,7 +131,7 @@ export function useColorModel() {
   }
 
   const importData = async (file: File) => { await db.importJson(await file.text()); await hydrate(); setNotice('Local archive imported.') }
-  const reset = async () => { await db.reset(); ensembleRef.current = new NeuralEnsemble(611, [6, 12, 8, 1], 3, 2, .003); setChoices([]); setSnapshots([]); setMetrics(null); setEstimate(initialColor); setSpread(Number.NaN); setPair(pairFor(ensembleRef.current, [])); setNotice('Local data reset.') }
+  const reset = async () => { await db.reset(); ensembleRef.current = new PreferenceEnsemble(611); setChoices([]); setSnapshots([]); setMetrics(null); setEstimate(initialColor); setSpread(Number.NaN); setPair(pairFor(ensembleRef.current, [])); setNotice('Local data reset.') }
 
   const readiness = assessReadiness(choices, metrics, spread)
   return {
