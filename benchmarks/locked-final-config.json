@@ -1,0 +1,63 @@
+{
+  "lockVersion": 1,
+  "lockedAt": "2026-09-02T01:03:00+04:00",
+  "benchmarkVersion": "prequential-suite-v1",
+  "developmentArtifact": "benchmarks/artifacts/development/staged-screening.json",
+  "developmentSeeds": [10000,10001,10002,10003,10004,10005,10006,10007,10008,10009,10010,10011,10012,10013,10014,10015,10016,10017,10018,10019,10020,10021,10022,10023,10024,10025,10026,10027,10028,10029,10030,10031,10032,10033,10034,10035,10036,10037,10038],
+  "finalSeeds": { "first": 90000, "count": 208, "explicitlyUntouchedBeforeLock": true },
+  "budgets": [30, 50, 100, 150],
+  "candidate": {
+    "model": "rbf-bt-24",
+    "class": "fixed-center-rbf-bradley-terry",
+    "parameters": 33,
+    "features": "9 OKLab quadratic terms plus 24 fixed OKLab RBF centers",
+    "bandwidth": 0.15,
+    "learningRate": 0.025,
+    "optimizer": "online Adam with L2=0.0005",
+    "replay": "newest-only",
+    "queryPolicy": "uniform-random"
+  },
+  "bestNeuralDevelopmentCandidate": {
+    "model": "mlp-6x12x8x1",
+    "parameters": 197,
+    "learningRate": 0.003,
+    "replay": "newest-only"
+  },
+  "productRequirementAmendmentBeforeFinalMetricsInspection": {
+    "recordedAt": "2026-09-02T01:13:00+04:00",
+    "productionMustBeNeural": true,
+    "productionCandidate": "mlp-6x12x8x1",
+    "rbfRole": "non-neural scientific benchmark only",
+    "candidateConfigurationChangedAfterFinalStarted": false,
+    "note": "The neural finalist and all hyperparameters were already frozen above before any final run. This amendment changes only production eligibility; no final metric was inspected."
+  },
+  "baseline": {
+    "frozenCommit": "3cda77c5cfe53ad7e4587e52636af7741e07b239",
+    "model": "five-member-mlp-ensemble-v1",
+    "parameters": 2925,
+    "queryPolicy": "frozen-current-heuristic"
+  },
+  "evaluation": {
+    "candidatePool": 180,
+    "primarySystemComparison": "frozen baseline with current heuristic vs locked candidate with uniform policy",
+    "neutralModelComparison": "both models with identical deterministic uniform pair streams",
+    "order": ["predict", "score", "train"]
+  },
+  "readiness": {
+    "minimumChoices": 50,
+    "requireRecentOptimumMedianDisplacementAtMost": 0.025,
+    "requireCycleConflictRateBelow": 0.5,
+    "uncertaintyMayTriggerReady": false,
+    "reason": "development ambiguity values did not empirically calibrate error"
+  },
+  "releaseGates": {
+    "neutralPrequentialLogLossPaired95UpperBelow": 0,
+    "systemPrequentialLogLossPaired95UpperBelow": 0,
+    "optimumMeanDifferenceAtEachBudgetAtMost": 0.015,
+    "optimumP90RegressionAtEachBudgetAtMost": 0.02,
+    "optimumWorstDecileRegressionAtEachBudgetAtMost": 0.02,
+    "p90DisplacementRegressionAt150AtMost": 0.01,
+    "meanUpdateLatencyMsBelow": 50,
+    "activePolicyRequired": false
+  }
+}

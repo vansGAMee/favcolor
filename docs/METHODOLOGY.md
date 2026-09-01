@@ -11,9 +11,9 @@
 
 ## Engineering assumptions
 
-- Candidate-pool size, active-acquisition weights, a soft preferred OKLab-distance band, batch epochs, readiness sample minimums, optimum-spread bound, and 11/7/13-event control scheduling are MVP mechanics—not perceptual constants.
+- Candidate-pool size, uniform pair acquisition, readiness sample minimums, optimum-spread bound, and 11/7/13-event control scheduling are MVP mechanics—not perceptual constants.
 - Ready requires at least three future folds with two neural wins, two repeated controls with at least 60% consistency, a local-candidate challenge win rate of at least 50%, and ensemble optimum spread no greater than 0.18 OKLab. These conservative release mechanics are not universal scientific cutoffs.
-- Five models balance uncertainty information with browser cost.
+- Three compact models balance robustness with browser cost; each receives two online Adam updates from the newest click.
 - Validation metrics appear after eight chronological future predictions; this is a display minimum, not a truth threshold.
 - Context and drift use regularized residual modulation over ΔOKLab features. They stay off unless three rolling-origin folds satisfy independently calibrated gates documented in `VALIDATION.md`.
 - Reaction time is recorded but not used for weighting or inference. It has no admission result yet.
@@ -21,7 +21,7 @@
 ## Requires real-human validation
 
 - Whether repeated pair choices provide a stable and useful estimate for an individual.
-- Whether the active acquisition policy improves sample efficiency for humans as it does in the current simulations.
+- Whether uniform acquisition remains preferable to active acquisition for real humans.
 - Whether context or long-term drift appears at detectable rates in real use.
 - Whether display changes, fatigue, symbolic HEX knowledge, adaptation, and comparison order introduce important biases.
 

@@ -1,0 +1,38 @@
+{
+  "lockVersion": 1,
+  "lockedAt": "2026-09-02T01:38:00+04:00",
+  "benchmarkVersion": "prequential-suite-v1-neural-cycle-2",
+  "developmentArtifacts": [
+    "benchmarks/artifacts/development/neural-cycle-2.json",
+    "benchmarks/artifacts/development/neural-cycle-2-policy.json"
+  ],
+  "developmentSeeds": { "first": 10000, "count": 39 },
+  "priorFinalCohortExcludedFromSelection": { "first": 90000, "count": 208 },
+  "finalSeeds": { "first": 120000, "count": 208, "statusAtLock": "untouched" },
+  "budgets": [30, 50, 100, 150],
+  "productionCandidate": {
+    "class": "true-neural-ensemble",
+    "layersPerMember": [6, 12, 8, 1],
+    "members": 3,
+    "parametersPerMember": 197,
+    "totalParameters": 591,
+    "learningRate": 0.003,
+    "optimizer": "online Adam",
+    "updatesPerMemberPerClick": 2,
+    "replay": "newest-only",
+    "queryPolicy": "uniform-random"
+  },
+  "rbfBenchmark": { "centers": 24, "parameters": 33, "bandwidth": 0.15, "learningRate": 0.025, "queryPolicy": "uniform-random", "productionEligible": false },
+  "baseline": { "frozenCommit": "3cda77c5cfe53ad7e4587e52636af7741e07b239", "parameters": 2925, "members": 5, "queryPolicy": "frozen-current-heuristic" },
+  "evaluation": { "candidatePool": 180, "order": ["predict", "score", "train"], "neutralPolicy": "uniform-random" },
+  "releaseGates": {
+    "neutralLogLossPaired95UpperBelow": 0,
+    "systemLogLossPaired95UpperBelow": 0,
+    "optimumMeanRegressionEachBudgetAtMost": 0.015,
+    "optimumP90RegressionEachBudgetAtMost": 0.02,
+    "optimumWorstDecileRegressionEachBudgetAtMost": 0.02,
+    "p90DisplacementRegressionAt150AtMost": 0.01,
+    "meanUpdateLatencyMsBelow": 50
+  },
+  "readiness": { "uncertaintyMayTriggerReady": false, "cycleConflictDowngradesReady": true, "minimumChoices": 50 }
+}

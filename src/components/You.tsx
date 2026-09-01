@@ -30,7 +30,7 @@ export function You({ model }: { model: ReturnTypeOfColorModel }) {
     </section>
     <HistoryGrid snapshots={model.snapshots} />
     <section className="data-panel">
-      <div><p className="eyebrow">Local archive</p><h2>Your data stays yours.</h2><p>Choices, snapshots, and five independently seeded models live in IndexedDB on this browser.</p></div>
+      <div><p className="eyebrow">Local archive</p><h2>Your data stays yours.</h2><p>Choices, snapshots, and three independently seeded compact neural models live in IndexedDB on this browser.</p></div>
       <div className="data-actions">
         <button onClick={() => void model.exportData()}>Export JSON</button>
         <button onClick={() => input.current?.click()}>Import JSON</button>
