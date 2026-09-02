@@ -10,6 +10,7 @@ import { assessReadiness } from '../ml/validation/readiness'
 import { ColorDatabase } from '../storage/db'
 import { collectTrainingObservation } from '../data/trainingCollection'
 import { insertTrainingSession } from '../data/supabaseClient'
+import { selectControlSource } from '../ml/activeLearning/controlSchedule'
 
 type DisplayPair = { canonical: readonly [OKLCH, OKLCH]; displayed: readonly [OKLCH, OKLCH]; leftColor: 'a' | 'b'; type: ChoiceEvent['pairType']; startedAt: number }
 
@@ -29,7 +30,7 @@ function pairFor(ensemble: PreferenceEnsemble, choices: ChoiceEvent[], typeOverr
   let canonical: readonly [OKLCH, OKLCH]
   let type: ChoiceEvent['pairType'] = typeOverride ?? 'normal'
   if (choices.length > 3 && choices.length % 11 === 10) {
-    const old = choices[(choices.length * 7) % choices.length]
+    const old = selectControlSource(choices)
     canonical = [old.colorA, old.colorB]
     type = 'repeated-control'
   } else if (choices.length > 31 && choices.length % 13 === 12) {

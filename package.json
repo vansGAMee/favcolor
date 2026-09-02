@@ -11,6 +11,7 @@
     "calibrate": "vite-node scripts/calibrate-validation.ts",
     "benchmark": "vite-node scripts/benchmark-learning.ts",
     "benchmark:colorful": "vite-node scripts/benchmark-colorful-recovery.ts",
+    "benchmark:recovery": "vite-node scripts/benchmark-recovery-150.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc -b && vite build"
   },
