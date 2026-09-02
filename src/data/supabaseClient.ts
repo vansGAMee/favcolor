@@ -13,5 +13,6 @@ export async function insertTrainingSession(row: TrainingSessionRow) {
   if (!url || !publishableKey) throw new Error('Training collection is not configured')
   client ??= createTrainingClient(url, publishableKey)
   const { error } = await client.from('training_sessions').insert(row)
-  if (error) throw error
+  if (import.meta.env.DEV && import.meta.env.MODE !== 'test') console.debug('[favcolor training]', { stage: 'supabase-response', accepted: !error, code: error?.code, message: error?.message })
+  if (error) throw new Error(`Supabase training insert failed (${error.code ?? 'unknown'}): ${error.message}`)
 }

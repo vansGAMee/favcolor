@@ -26,6 +26,12 @@ function asTraining(choice: ChoiceEvent): TrainingExample {
   }
 }
 
+function controlExpectedChoice(event: ChoiceEvent, previousChoices: ChoiceEvent[]) {
+  if (event.pairType !== 'repeated-control') return undefined
+  const same = (a: OKLCH, b: OKLCH) => a.l === b.l && a.c === b.c && a.h === b.h
+  return [...previousChoices].reverse().find(choice => choice.pairType !== 'repeated-control' && same(choice.colorA, event.colorA) && same(choice.colorB, event.colorB))?.chosen
+}
+
 function pairFor(ensemble: PreferenceEnsemble, choices: ChoiceEvent[], typeOverride?: ChoiceEvent['pairType']): DisplayPair {
   let canonical: readonly [OKLCH, OKLCH]
   let type: ChoiceEvent['pairType'] = typeOverride ?? 'normal'
@@ -124,6 +130,7 @@ export function useColorModel() {
         colorA: event.colorA, colorB: event.colorB, chosen: event.chosen, predictionA,
         modelVersion: event.modelVersion, pairType: event.pairType,
         chosenSide: displayedIndex === 0 ? 'left' : 'right', reactionTimeMs: event.reactionTimeMs,
+        controlExpectedChoice: controlExpectedChoice(event, choices),
       }, insertTrainingSession)
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not save your choice') }
     finally { setBusy(false) }

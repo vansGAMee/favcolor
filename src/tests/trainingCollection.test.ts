@@ -16,6 +16,16 @@ const goodSession = () => {
   return [...base, ...base.slice(0, 4).map((item, index) => ({ ...item, pairType: 'repeated-control' as const, chosenSide: index % 2 ? 'right' as const : 'left' as const }))]
 }
 
+const postOptInSessionWithHistoricalControls = () => [
+  ...Array.from({ length: 40 }, (_, index) => observation(index)),
+  ...Array.from({ length: 4 }, (_, index) => ({
+    ...observation(100 + index), pairType: 'repeated-control' as const,
+    // The source choice existed locally before the person opted in, so it is
+    // intentionally not part of the upload buffer.
+    controlExpectedChoice: index % 2 ? 'b' as const : 'a' as const,
+  })),
+]
+
 describe('voluntary training collection', () => {
   beforeEach(() => localStorage.clear())
 
@@ -33,6 +43,14 @@ describe('voluntary training collection', () => {
     expect(insert.mock.calls[0][0]).toMatchObject({ model_version: 2, quality: 'good' })
     expect(insert.mock.calls[0][0].payload.observations).toHaveLength(44)
     expect(insert.mock.calls[0][0].payload.observations[0]).not.toHaveProperty('chosenSide')
+  })
+
+  it('uploads a post-opt-in batch when controls repeat earlier local choices', async () => {
+    setTrainingSharing(true)
+    const insert = vi.fn().mockResolvedValue(undefined)
+    for (const item of postOptInSessionWithHistoricalControls()) await collectTrainingObservation(item, insert)
+    expect(insert).toHaveBeenCalledOnce()
+    expect(insert.mock.calls[0][0].payload.observations).not.toHaveProperty('controlExpectedChoice')
   })
 
   it('does not send a constant-side poor session', async () => {
@@ -53,10 +71,13 @@ describe('voluntary training collection', () => {
   it('keeps the batch and resolves safely when the network fails', async () => {
     setTrainingSharing(true)
     const insert = vi.fn().mockRejectedValue(new Error('offline'))
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     let result = 'buffered'
     for (const item of goodSession()) result = await collectTrainingObservation(item, insert)
     expect(result).toBe('network-error')
     expect(JSON.parse(localStorage.getItem('favcolor-training-buffer-v1') ?? '{}').observations).toHaveLength(44)
+    expect(warning).toHaveBeenCalledWith('[favcolor training] insert failed', expect.any(Error))
+    warning.mockRestore()
   })
 
   it('creates a browser client with only URL and publishable key', () => {

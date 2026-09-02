@@ -14,6 +14,8 @@ export interface TrainingObservation {
   pairType: PairType
   chosenSide: 'left' | 'right'
   reactionTimeMs: number
+  /** Local-only result of the source choice for a repeated control. Never uploaded. */
+  controlExpectedChoice?: 'a' | 'b'
 }
 
 export interface TrainingSessionRow {
@@ -21,7 +23,7 @@ export interface TrainingSessionRow {
   quality: 'good'
   payload: {
     schema_version: 1
-    observations: Array<Omit<TrainingObservation, 'chosenSide' | 'reactionTimeMs'>>
+    observations: Array<Omit<TrainingObservation, 'chosenSide' | 'reactionTimeMs' | 'controlExpectedChoice'>>
     aggregates: { choice_count: number; control_count: number; control_consistency: number; side_balance: number; median_reaction_time_ms: number }
   }
 }
@@ -41,6 +43,9 @@ const readBuffer = () => {
 }
 
 const writeBuffer = (buffer: BufferState) => localStorage.setItem(TRAINING_BUFFER_KEY, JSON.stringify(buffer))
+const diagnostic = (stage: string, detail: Record<string, unknown>) => {
+  if (import.meta.env.DEV && import.meta.env.MODE !== 'test') console.debug('[favcolor training]', { stage, ...detail })
+}
 
 export const trainingSharingEnabled = () => localStorage.getItem(TRAINING_SHARING_KEY) === 'true'
 
@@ -55,9 +60,10 @@ export function classifyTrainingSession(observations: TrainingObservation[]) {
   const controls = observations.flatMap(control => {
     if (control.pairType !== 'repeated-control') return []
     const original = observations.find(item => item !== control && item.pairType !== 'repeated-control' && samePair(item, control))
-    return original ? [{ control, original }] : []
+    const expected = control.controlExpectedChoice ?? original?.chosen
+    return expected ? [{ control, expected }] : []
   })
-  const consistent = controls.filter(({ control, original }) => original.chosen === control.chosen).length
+  const consistent = controls.filter(({ control, expected }) => expected === control.chosen).length
   const controlConsistency = controls.length ? consistent / controls.length : 0
   const sideBalance = Math.min(leftRate, 1 - leftRate) * 2
   if (sideBalance < .1 || (controls.length >= 3 && controlConsistency < .5)) return { quality: 'poor' as const, controlCount: controls.length, controlConsistency, sideBalance }
@@ -73,7 +79,7 @@ function buildRow(observations: TrainingObservation[], quality: ReturnType<typeo
     quality: 'good',
     payload: {
       schema_version: 1,
-      observations: observations.map(({ chosenSide: _side, reactionTimeMs: _reaction, ...item }) => ({ ...item, predictionA: Math.max(0, Math.min(1, item.predictionA)) })),
+      observations: observations.map(({ chosenSide: _side, reactionTimeMs: _reaction, controlExpectedChoice: _expected, ...item }) => ({ ...item, predictionA: Math.max(0, Math.min(1, item.predictionA)) })),
       aggregates: { choice_count: observations.length, control_count: quality.controlCount, control_consistency: quality.controlConsistency, side_balance: quality.sideBalance, median_reaction_time_ms: Math.round(median) },
     },
   }
@@ -81,22 +87,33 @@ function buildRow(observations: TrainingObservation[], quality: ReturnType<typeo
 
 export async function collectTrainingObservation(observation: TrainingObservation, insert: TrainingInsert) {
   try {
-    if (!trainingSharingEnabled()) return 'disabled'
+    if (!trainingSharingEnabled()) { diagnostic('disabled', {}); return 'disabled' }
     const buffer = readBuffer()
     buffer.observations = [...buffer.observations, observation].slice(-64)
     buffer.total += 1
     writeBuffer(buffer)
     const interval = buffer.lastAttemptTotal ? RETRY_INTERVAL : MIN_SESSION_SIZE
+    diagnostic('buffered', { size: buffer.observations.length, total: buffer.total, nextAttemptAt: buffer.lastAttemptTotal + interval })
     if (buffer.observations.length < MIN_SESSION_SIZE || buffer.total - buffer.lastAttemptTotal < interval) return 'buffered'
     const quality = classifyTrainingSession(buffer.observations)
+    diagnostic('quality', { size: buffer.observations.length, ...quality })
     if (quality.quality === 'poor') { localStorage.removeItem(TRAINING_BUFFER_KEY); return 'poor' }
     buffer.lastAttemptTotal = buffer.total
     writeBuffer(buffer)
     if (quality.quality !== 'good') return 'uncertain'
     try {
+      diagnostic('insert-attempt', { size: buffer.observations.length, ...quality })
       await insert(buildRow(buffer.observations, quality))
       localStorage.removeItem(TRAINING_BUFFER_KEY)
+      diagnostic('insert-success', { size: buffer.observations.length })
       return 'sent'
-    } catch { return 'network-error' }
-  } catch { return 'storage-error' }
+    } catch (cause) {
+      console.warn('[favcolor training] insert failed', cause)
+      diagnostic('insert-failed', { message: cause instanceof Error ? cause.message : String(cause) })
+      return 'network-error'
+    }
+  } catch (cause) {
+    console.warn('[favcolor training] buffer failed', cause)
+    return 'storage-error'
+  }
 }
