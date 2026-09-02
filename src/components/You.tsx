@@ -3,6 +3,7 @@ import type { ReturnTypeOfColorModel } from './types'
 import { colorCss, colorToHex } from '../color/color'
 import { HistoryGrid } from './HistoryGrid'
 import { EvolutionChart } from './EvolutionChart'
+import { TastePortrait } from './TastePortrait'
 import { stateLabel, translate, type Language } from '../app/i18n'
 
 const metric = (value: number | undefined, format = (x: number) => x.toFixed(3)) => value === undefined || !Number.isFinite(value) ? 'Not enough evidence yet' : format(value)
@@ -36,6 +37,7 @@ export function You({ model, language }: { model: ReturnTypeOfColorModel; langua
         <div className="effects-row"><div><span>{t('Time-of-day pattern', 'Влияние времени суток')}</span><strong>{model.choices.length < 100 ? t('Not enough answers yet', 'Пока мало ответов') : model.contextActive ? t('Your taste changes with time', 'Вкус зависит от времени') : t('No clear effect found', 'Явного влияния нет')}</strong></div><div><span>{t('Preference change', 'Изменение вкуса')}</span><strong>{model.choices.length < 100 ? t('Not enough answers yet', 'Пока мало ответов') : model.driftActive ? t('Gradual change detected', 'Обнаружено постепенное изменение') : t('Preferences look stable', 'Предпочтения стабильны')}</strong></div><div><span>{t('Repeat consistency', 'Постоянство ответов')}</span><strong>{model.readiness.controlConsistency === null ? t('Not enough answers yet', 'Пока мало ответов') : `${(model.readiness.controlConsistency * 100).toFixed(0)}% · ${model.readiness.controlCount} ${t('checks', 'проверок')}`}</strong></div></div>
       </section>
     </section>
+    <TastePortrait choices={model.choices} language={language} accent={estimateHex} />
     <section className="insights-grid"><HistoryGrid snapshots={model.snapshots} language={language} /><EvolutionChart snapshots={model.snapshots} language={language} /></section>
     <section className="data-panel">
       <div><p className="eyebrow">{t('Local archive', 'Локальный архив')}</p><h2>{t('Your data stays yours.', 'Ваши данные принадлежат вам.')}</h2><p>{t('Answers, daily colors, and the model are stored only in this browser.', 'Ответы, ежедневные цвета и модель хранятся только в этом браузере.')}</p></div>

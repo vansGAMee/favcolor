@@ -45,6 +45,7 @@ test('mobile 390px keeps equal cards, keyboard flow, and no overflow', async ({ 
   const historyDay = await page.getByRole('button', { name: /Estimated color for/ }).boundingBox()
   expect(historyDay?.width).toBeGreaterThanOrEqual(44)
   expect(historyDay?.height).toBeGreaterThanOrEqual(44)
+  await page.waitForTimeout(700)
   await page.screenshot({ path: 'test-results/mobile-you.png', fullPage: true })
 })
 
@@ -58,5 +59,6 @@ test('desktop analytics composition has no horizontal overflow', async ({ page }
   await expect(page.getByRole('tab', { name: 'You' })).toBeFocused()
   await expect(page.getByRole('heading', { name: /Your color/ })).toBeVisible()
   await assertNoOverflow(page)
+  await page.waitForTimeout(700)
   await page.screenshot({ path: 'test-results/desktop-you.png', fullPage: true })
 })

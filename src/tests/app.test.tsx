@@ -27,6 +27,7 @@ describe('product flow', () => {
     await user.click(cards[1])
     await waitFor(() => expect(screen.getByText(/choice recorded/i)).toBeInTheDocument())
     await user.click(screen.getByRole('tab', { name: 'You' }))
+    expect(screen.getByRole('heading', { name: 'Taste profile' })).toBeInTheDocument()
     expect(screen.getAllByText(/not enough answers yet/i).length).toBeGreaterThan(0)
     expect(screen.queryByText(/93%/)).not.toBeInTheDocument()
     expect(await screen.findByRole('button', { name: /estimated color for/i })).toBeInTheDocument()
