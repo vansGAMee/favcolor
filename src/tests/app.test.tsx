@@ -41,4 +41,20 @@ describe('product flow', () => {
     expect(screen.getByText('Ваш личный цвет')).toBeInTheDocument()
     expect(localStorage.getItem('favcolor-language')).toBe('ru')
   })
+
+  it('collects pre-answer prediction only after voluntary opt-in', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(await screen.findByRole('tab', { name: 'You' }))
+    const sharing = screen.getByRole('switch', { name: /help improve the model/i })
+    expect(sharing).not.toBeChecked()
+    await user.click(sharing)
+    await user.click(screen.getByRole('tab', { name: 'Discover' }))
+    await user.click((await screen.findAllByRole('button', { name: /choose/i }))[0])
+    await waitFor(() => {
+      const buffer = JSON.parse(localStorage.getItem('favcolor-training-buffer-v1') ?? '{}')
+      expect(buffer.observations).toHaveLength(1)
+      expect(buffer.observations[0].predictionA).toEqual(expect.any(Number))
+    })
+  })
 })

@@ -184,6 +184,16 @@ nav button[aria-selected="true"]::after { content: ""; position: absolute; left:
 .empty-orbit i { position: absolute; width: 8px; height: 8px; left: 3px; top: 30px; border-radius: 50%; background: var(--violet); box-shadow: 0 0 15px rgba(169, 134, 255, .7); }
 .data-panel { margin-top: 18px; padding: clamp(26px, 3vw, 38px); display: flex; justify-content: space-between; gap: 32px; align-items: end; border-radius: 20px; }
 .data-panel p:not(.eyebrow) { max-width: 560px; margin: 12px 0 0; color: var(--muted); line-height: 1.6; font-size: 11px; }
+.sharing-control { max-width: 560px; display: flex; align-items: center; gap: 12px; margin-top: 18px; cursor: pointer; }
+.sharing-control input { position: absolute; opacity: 0; pointer-events: none; }
+.sharing-switch { flex: 0 0 auto; width: 34px; height: 20px; padding: 3px; border: 1px solid var(--line-strong); border-radius: 20px; background: #242429; transition: background-color 160ms ease, border-color 160ms ease; }
+.sharing-switch i { display: block; width: 12px; height: 12px; border-radius: 50%; background: #8e8a94; transition: transform 180ms cubic-bezier(.2,.8,.2,1), background-color 160ms ease; }
+.sharing-control input:checked + .sharing-switch { border-color: rgba(169,134,255,.55); background: rgba(169,134,255,.2); }
+.sharing-control input:checked + .sharing-switch i { background: var(--violet); transform: translateX(14px); box-shadow: 0 0 10px rgba(169,134,255,.48); }
+.sharing-control input:focus-visible + .sharing-switch { outline: 2px solid #c8b4ff; outline-offset: 3px; }
+.sharing-control > span:last-child strong, .sharing-control > span:last-child small { display: block; }
+.sharing-control > span:last-child strong { font-size: 10px; font-weight: 600; }
+.sharing-control > span:last-child small { margin-top: 3px; color: var(--muted); font-size: 8px; line-height: 1.4; }
 .data-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .data-actions button { min-height: 42px; padding: 0 15px; border: 1px solid var(--line-strong); border-radius: 10px; background: #18181b; cursor: pointer; font-size: 10px; transition: transform 120ms ease, background-color 140ms ease, border-color 140ms ease; }
 .data-actions button:hover { background: #202024; border-color: rgba(255, 255, 255, .2); }

@@ -8,6 +8,8 @@ import { searchOptimum } from '../ml/preference/search'
 import { evaluateFactors, rollingValidation } from '../ml/validation/validation'
 import { assessReadiness } from '../ml/validation/readiness'
 import { ColorDatabase } from '../storage/db'
+import { collectTrainingObservation } from '../data/trainingCollection'
+import { insertTrainingSession } from '../data/supabaseClient'
 
 type DisplayPair = { canonical: readonly [OKLCH, OKLCH]; displayed: readonly [OKLCH, OKLCH]; leftColor: 'a' | 'b'; type: ChoiceEvent['pairType']; startedAt: number }
 
@@ -86,6 +88,7 @@ export function useColorModel() {
   const choose = async (displayedIndex: 0 | 1) => {
     if (busy) return
     setBusy(true)
+    const predictionA = ensembleRef.current.probability(pair.canonical[0], pair.canonical[1])
     const canonicalChosen: 'a' | 'b' = displayedIndex === 0 ? pair.leftColor : pair.leftColor === 'a' ? 'b' : 'a'
     const now = new Date()
     const event: ChoiceEvent = {
@@ -116,6 +119,11 @@ export function useColorModel() {
       setEstimate(optimum)
       setSpread(optimum.spread)
       setMetrics(validation)
+      void collectTrainingObservation({
+        colorA: event.colorA, colorB: event.colorB, chosen: event.chosen, predictionA,
+        modelVersion: event.modelVersion, pairType: event.pairType,
+        chosenSide: displayedIndex === 0 ? 'left' : 'right', reactionTimeMs: event.reactionTimeMs,
+      }, insertTrainingSession)
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not save your choice') }
     finally { setBusy(false) }
   }
