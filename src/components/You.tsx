@@ -1,18 +1,16 @@
-import { useRef, useState, type CSSProperties } from 'react'
+import { useRef, type CSSProperties } from 'react'
 import type { ReturnTypeOfColorModel } from './types'
 import { colorCss, colorToHex } from '../color/color'
 import { HistoryGrid } from './HistoryGrid'
 import { EvolutionChart } from './EvolutionChart'
 import { TastePortrait } from './TastePortrait'
 import { stateLabel, translate, type Language } from '../app/i18n'
-import { setTrainingSharing, trainingSharingEnabled } from '../data/trainingCollection'
 
 const metric = (value: number | undefined, format = (x: number) => x.toFixed(3)) => value === undefined || !Number.isFinite(value) ? 'Not enough evidence yet' : format(value)
 
-export function You({ model, language }: { model: ReturnTypeOfColorModel; language: Language }) {
+export function You({ model, language, sharing, onSharingChange }: { model: ReturnTypeOfColorModel; language: Language; sharing: boolean; onSharingChange: (enabled: boolean) => void }) {
   const t = (english: string, russian: string) => translate(language, english, russian)
   const input = useRef<HTMLInputElement>(null)
-  const [sharing, setSharing] = useState(trainingSharingEnabled)
   const enough = (model.metrics?.count ?? 0) >= 8
   const estimateHex = colorToHex(model.estimate)
   const stable = model.modelState === 'Ready'
@@ -43,7 +41,7 @@ export function You({ model, language }: { model: ReturnTypeOfColorModel; langua
     <section className="insights-grid"><HistoryGrid snapshots={model.snapshots} language={language} /><EvolutionChart snapshots={model.snapshots} language={language} /></section>
     <section className="data-panel">
       <div><p className="eyebrow">{t('Local archive', 'Локальный архив')}</p><h2>{t('Your data stays yours.', 'Ваши данные принадлежат вам.')}</h2><p>{t('Answers, daily colors, and the personal model stay in this browser.', 'Ответы, ежедневные цвета и персональная модель остаются в этом браузере.')}</p>
-        <label className="sharing-control"><input type="checkbox" role="switch" aria-label={t('Help improve the model', 'Помочь улучшить модель')} checked={sharing} onChange={event => { setTrainingSharing(event.target.checked); setSharing(event.target.checked) }} /><span className="sharing-switch"><i /></span><span><strong>{t('Help improve the model', 'Помочь улучшить модель')}</strong><small>{t('Voluntarily send anonymous color choices for a future shared model.', 'Добровольно отправлять обезличенные выборы цветов для будущей общей модели.')}</small></span></label>
+        <label className="sharing-control"><input type="checkbox" role="switch" aria-label={t('Help improve the model', 'Помочь улучшить модель')} checked={sharing} onChange={event => onSharingChange(event.target.checked)} /><span className="sharing-switch"><i /></span><span><strong>{t('Help improve the model', 'Помочь улучшить модель')}</strong><small>{t('Voluntarily send anonymous color choices for a future shared model.', 'Добровольно отправлять обезличенные выборы цветов для будущей общей модели.')}</small></span></label>
       </div>
       <div className="data-actions">
         <button onClick={() => void model.exportData()}>{t('Export JSON', 'Скачать JSON')}</button>

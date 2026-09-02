@@ -3,10 +3,13 @@ import { useColorModel } from './app/useColorModel'
 import { translate, type Language } from './app/i18n'
 import { Discover } from './components/Discover'
 import { You } from './components/You'
+import { TrainingPrompt } from './components/TrainingPrompt'
+import { setTrainingSharing, trainingSharingEnabled } from './data/trainingCollection'
 import './styles.css'
 
 export function App() {
   const [tab, setTab] = useState<'discover' | 'you'>('discover')
+  const [sharingEnabled, setSharingEnabled] = useState(trainingSharingEnabled)
   const [language, setLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem('favcolor-language')
     if (saved === 'en' || saved === 'ru') return saved
@@ -18,6 +21,8 @@ export function App() {
     document.documentElement.lang = language
     localStorage.setItem('favcolor-language', language)
   }, [language])
+  const enableSharing = () => { setTrainingSharing(true); setSharingEnabled(true) }
+  const updateSharing = (enabled: boolean) => { setTrainingSharing(enabled); setSharingEnabled(enabled) }
   return <div className="app-shell">
     <a className="skip-link" href="#main-content">{t('Skip to content', 'Перейти к содержанию')}</a>
     <header className="site-header">
@@ -29,6 +34,7 @@ export function App() {
       <div className="header-tools"><span className="local-badge"><i />{t('Private · On device', 'Приватно · На устройстве')}</span><button className="language-toggle" onClick={() => setLanguage(language === 'en' ? 'ru' : 'en')} aria-label={t('Switch to Russian', 'Переключить на английский')}>{language === 'en' ? 'RU' : 'EN'}</button></div>
     </header>
     {model.error && <div className="error-banner" role="alert">{model.error}</div>}
-    <div className="tab-stage" id="main-content" key={tab}>{tab === 'discover' ? <Discover model={model} language={language} /> : <You model={model} language={language} />}</div>
+    <TrainingPrompt choiceCount={model.choices.length} sharingEnabled={sharingEnabled} onHelp={enableSharing} />
+    <div className="tab-stage" id="main-content" key={tab}>{tab === 'discover' ? <Discover model={model} language={language} /> : <You model={model} language={language} sharing={sharingEnabled} onSharingChange={updateSharing} />}</div>
   </div>
 }
