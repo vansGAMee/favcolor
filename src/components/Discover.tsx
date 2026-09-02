@@ -6,12 +6,13 @@ export function Discover({ model }: { model: ReturnTypeOfColorModel }) {
   const blind = model.pair.type === 'validation' || model.pair.type === 'repeated-control'
   const [choiceMotion, setChoiceMotion] = useState<{ pair: ReturnTypeOfColorModel['pair']; index: number } | null>(null)
   const chosen = choiceMotion?.pair === model.pair ? choiceMotion.index : null
+  const committedChoiceCount = model.busy ? Math.max(0, model.choices.length - 1) : model.choices.length
   const stage = model.choices.length < 16 ? 'Calibrating your range' : model.choices.length < 50 ? 'Mapping preference' : 'Refining your estimate'
 
   return <main className="discover" id="discover-panel" role="tabpanel" aria-labelledby="discover-tab">
     <section className="discover-copy">
       <div><p className="eyebrow">A private color study</p><h1>Which color feels<br />more like you?</h1></div>
-      <div className="study-status"><span className="status-kicker"><i />{stage}</span><span className="choice-count"><strong>{model.choices.length}</strong> valid choices</span></div>
+      <div className="study-status"><span className="status-kicker"><i />{stage}</span><span className="choice-count" key={committedChoiceCount}><strong>{committedChoiceCount}</strong> valid choices</span></div>
     </section>
     <section className="comparison" aria-label="Choose the color you prefer">
       {model.pair.displayed.map((color, index) => <button
@@ -31,6 +32,6 @@ export function Discover({ model }: { model: ReturnTypeOfColorModel }) {
       </button>)}
       <span className="versus" aria-hidden="true">or</span>
     </section>
-    <footer className="choice-footer"><span>{model.notice}</span><span>{blind ? 'Blind consistency check' : 'Trust your first reaction'}</span></footer>
+    <footer className="choice-footer"><span className="notice-change" key={model.notice}>{model.notice}</span><span>{blind ? 'Blind consistency check' : 'Trust your first reaction'}</span></footer>
   </main>
 }

@@ -21,7 +21,7 @@ export function HistoryGrid({ snapshots }: { snapshots: DailySnapshot[] }) {
     <div className="history-scroll"><div className="history-grid" aria-label="Daily color estimate history">
       {days.map(date => {
         const snapshot = byDate.get(date)
-        return snapshot ? <button key={date} aria-label={`Estimated color for ${date}: ${snapshot.hex}`} style={{ backgroundColor: snapshot.hex }} onClick={() => setSelected(snapshot)} />
+        return snapshot ? <button className={selected?.date === date ? 'is-active' : ''} key={date} aria-pressed={selected?.date === date} aria-label={`Estimated color for ${date}: ${snapshot.hex}`} style={{ backgroundColor: snapshot.hex }} onClick={() => setSelected(snapshot)} />
           : <span key={date} title={`${date}: no data`} />
       })}
     </div></div>
