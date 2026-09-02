@@ -17,17 +17,17 @@ export function HistoryGrid({ snapshots }: { snapshots: DailySnapshot[] }) {
   }, [])
   const byDate = new Map(snapshots.map(snapshot => [snapshot.date, snapshot]))
   return <section className="history-panel" aria-labelledby="history-title">
-    <div className="section-heading"><div><p className="eyebrow">Daily core snapshots</p><h2 id="history-title">Color history</h2></div><span>Past 26 weeks</span></div>
-    <div className="history-grid" aria-label="Daily color estimate history">
+    <div className="section-heading compact-heading"><div><p className="eyebrow">Personal color diary</p><h2 id="history-title">Color history</h2></div><span>Past 26 weeks</span></div>
+    <div className="history-scroll"><div className="history-grid" aria-label="Daily color estimate history">
       {days.map(date => {
         const snapshot = byDate.get(date)
         return snapshot ? <button key={date} aria-label={`Estimated color for ${date}: ${snapshot.hex}`} style={{ backgroundColor: snapshot.hex }} onClick={() => setSelected(snapshot)} />
           : <span key={date} title={`${date}: no data`} />
       })}
-    </div>
+    </div></div>
     <div className="history-detail" aria-live="polite">
       {selected ? <><span className="detail-chip" style={{ background: selected.hex }} /><strong>{selected.date}</strong><span>{selected.hex}</span><span>{selected.state}</span><span>{selected.totalChoices} choices</span><span>{selected.validation ? `${(selected.validation.accuracy * 100).toFixed(0)}% held-out accuracy` : 'Validation unavailable'}</span></>
-        : <span>Select a recorded day to inspect its evidence.</span>}
+        : <span>{snapshots.length ? 'Select a recorded day to inspect its evidence.' : 'Your first daily estimate will appear here automatically.'}</span>}
     </div>
   </section>
 }
