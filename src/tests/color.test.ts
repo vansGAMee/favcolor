@@ -36,4 +36,11 @@ describe('OKLCH color math', () => {
     expect(colorFeatures(a)).toHaveLength(6)
     expect(colorFeatures({ l: 1, c: 0, h: 360 }).every(Number.isFinite)).toBe(true)
   })
+
+  it('does not encode an arbitrary hue for an achromatic color', () => {
+    const grayAtRedHue = colorFeatures({ l: .6, c: 0, h: 25 })
+    const grayAtCyanHue = colorFeatures({ l: .6, c: 0, h: 195 })
+    expect(grayAtRedHue).toEqual(grayAtCyanHue)
+    expect(grayAtRedHue.slice(2)).toEqual([0, 0, 0, 0])
+  })
 })

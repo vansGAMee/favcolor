@@ -75,8 +75,12 @@ export function oklabDistance(a: OKLCH, b: OKLCH) {
 }
 
 export function colorFeatures(color: OKLCH) {
+  if (color.c === 0) return [color.l, 0, 0, 0, 0, 0]
   const h = wrapHue(color.h) * Math.PI / 180
-  return [color.l, color.c, Math.sin(h), Math.cos(h), Math.sin(2 * h), Math.cos(2 * h)]
+  // Hue is undefined for gray. Conditioning the circular features on chroma
+  // prevents an achromatic point from carrying a full-strength, arbitrary hue.
+  const hueStrength = Math.min(1, color.c / 0.2)
+  return [color.l, color.c, hueStrength * Math.sin(h), hueStrength * Math.cos(h), hueStrength * Math.sin(2 * h), hueStrength * Math.cos(2 * h)]
 }
 
 export function colorCss(color: OKLCH) {

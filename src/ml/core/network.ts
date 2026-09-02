@@ -107,10 +107,10 @@ export class MLP {
 }
 
 export function serializeNetwork(network: MLP) {
-  return { version: 1, architecture: [6, 24, 16, 1], parameters: Array.from(network.parameters()) }
+  return { version: 2, architecture: [6, 24, 16, 1], parameters: Array.from(network.parameters()) }
 }
 
 export function deserializeNetwork(value: ReturnType<typeof serializeNetwork>) {
-  if (value.version !== 1 || value.architecture.join(',') !== '6,24,16,1') throw new Error('Unsupported network format')
+  if (value.version !== 2 || value.architecture.join(',') !== '6,24,16,1') throw new Error('Unsupported network format')
   return new MLP(0, value.parameters)
 }

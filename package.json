@@ -10,6 +10,7 @@
     "test:e2e": "playwright test",
     "calibrate": "vite-node scripts/calibrate-validation.ts",
     "benchmark": "vite-node scripts/benchmark-learning.ts",
+    "benchmark:colorful": "vite-node scripts/benchmark-colorful-recovery.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc -b && vite build"
   },

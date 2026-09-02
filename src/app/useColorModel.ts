@@ -63,7 +63,7 @@ export function useColorModel() {
       const storedChoices = (await db.getChoices()).sort((a, b) => a.timestamp - b.timestamp)
       const storedSnapshots = await db.getSnapshots()
       const serialized = await db.getModel()
-      if (Array.isArray(serialized) && serialized.length === 5) ensembleRef.current = new PreferenceEnsemble(611, serialized as never)
+      if (Array.isArray(serialized) && serialized.length === 5 && serialized.every(model => model && typeof model === 'object' && 'version' in model && model.version === 2)) ensembleRef.current = new PreferenceEnsemble(611, serialized as never)
       else if (storedChoices.length) ensembleRef.current.train(storedChoices.map(asTraining), 10)
       const optimum = searchOptimum(ensembleRef.current, 500, storedChoices.length + 1)
       const validation = rollingValidation(storedChoices.map(asTraining))
@@ -91,7 +91,7 @@ export function useColorModel() {
     const event: ChoiceEvent = {
       id: crypto.randomUUID(), colorA: pair.canonical[0], colorB: pair.canonical[1], chosen: canonicalChosen,
       timestamp: now.getTime(), localHour: now.getHours(), weekday: now.getDay(), elapsedSinceStartMs: now.getTime() - appStart.current,
-      reactionTimeMs: Math.max(0, performance.now() - pair.startedAt), leftColor: pair.leftColor, modelVersion: 1, pairType: pair.type,
+      reactionTimeMs: Math.max(0, performance.now() - pair.startedAt), leftColor: pair.leftColor, modelVersion: 2, pairType: pair.type,
       distance: oklabDistance(pair.canonical[0], pair.canonical[1]),
     }
     const nextChoices = [...choices, event]
