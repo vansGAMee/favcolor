@@ -27,8 +27,17 @@ describe('product flow', () => {
     await user.click(cards[1])
     await waitFor(() => expect(screen.getByText(/choice recorded/i)).toBeInTheDocument())
     await user.click(screen.getByRole('tab', { name: 'You' }))
-    expect(screen.getAllByText(/not enough evidence yet/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/not enough answers yet/i).length).toBeGreaterThan(0)
     expect(screen.queryByText(/93%/)).not.toBeInTheDocument()
     expect(await screen.findByRole('button', { name: /estimated color for/i })).toBeInTheDocument()
+  })
+
+  it('switches the interface to Russian and remembers the choice', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(await screen.findByRole('button', { name: 'Switch to Russian' }))
+    expect(screen.getByRole('tab', { name: 'Выбор' })).toBeInTheDocument()
+    expect(screen.getByText('Ваш личный цвет')).toBeInTheDocument()
+    expect(localStorage.getItem('favcolor-language')).toBe('ru')
   })
 })
