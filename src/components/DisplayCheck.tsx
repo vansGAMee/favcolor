@@ -14,6 +14,15 @@ export function DisplayCheck({ language, onFinish }: { language: Language; onFin
       <p className="eyebrow">{t('A quick screen check', 'Быстрая проверка')}</p>
       <h1 id="display-check-title">{t('Display check', 'Проверка экрана')}</h1>
       <p className="display-check-truth">{t('This check cannot make colors identical on different screens. It helps you spot display settings that could distort your choices.', 'Эта проверка не может сделать цвета одинаковыми на разных экранах. Она помогает заметить настройки, которые могут искажать ваш выбор.')}</p>
+      <details className="oled-advice">
+        <summary>{t('Using an OLED screen?', 'Если у вас OLED')}</summary>
+        <ul>
+          <li>{t('Choose Standard, Natural, or sRGB mode—not Vivid.', 'Выберите Стандартный, Естественный или sRGB — не Яркий режим.')}</li>
+          <li>{t('Use a comfortable fixed brightness and disable auto-brightness while choosing.', 'Используйте комфортную фиксированную яркость и выключите автояркость на время выбора.')}</li>
+          <li>{t('Disable Night Light, Eye Comfort, True Tone, and color enhancement.', 'Отключите ночной режим, защиту зрения, True Tone и усиление цветов.')}</li>
+          <li>{t('Avoid judging color in direct sunlight; ambient light changes perception.', 'Не оценивайте цвет под прямым солнцем: освещение меняет восприятие.')}</li>
+        </ul>
+      </details>
       {step === 0 ? <>
         <p>{t('Can you distinguish the neighboring dark squares?', 'Различаются ли соседние тёмные квадраты?')}</p>
         <div className="tone-check" aria-label={t('Dark-to-light tone scale', 'Шкала от тёмного к светлому')}>{Array.from({ length: 9 }, (_, index) => <i key={index} style={{ background: `rgb(${10 + index * 28} ${10 + index * 28} ${12 + index * 27})` }} />)}</div>

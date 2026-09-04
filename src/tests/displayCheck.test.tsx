@@ -41,7 +41,15 @@ describe('first-run display check', () => {
     expect(screen.getByText(/lower screen brightness|уменьшите яркость/i)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /continue|далее/i }))
     await user.click(screen.getByRole('button', { name: /gray looks tinted|серый имеет оттенок/i }))
-    expect(screen.getByText(/disable night light|отключите ночной режим/i)).toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent(/disable night light|отключите ночной режим/i)
+  })
+
+  it('includes practical OLED guidance without claiming automatic correction', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(await screen.findByText(/using an oled screen|если у вас oled/i))
+    expect(screen.getByText(/standard.*srgb|стандартный.*srgb/i)).toBeInTheDocument()
+    expect(screen.getByText(/fixed.*brightness|фиксированную яркость/i)).toBeInTheDocument()
   })
 
   it('skip persists and existing choices bypass the check', async () => {

@@ -334,6 +334,7 @@ nav button[aria-selected="true"]::after { content: ""; position: absolute; left:
 .display-check-card h1{font-size:clamp(38px,8vw,66px);line-height:.95;margin:12px 0 20px;letter-spacing:-.055em}
 .display-check-card>p{max-width:500px;color:#aaa6b2;font-size:16px;line-height:1.55}
 .display-check-card .display-check-truth{margin:0 0 28px;padding:12px 14px;border-left:2px solid #8f78c7;background:#18161d;color:#c1bdc8;font-size:13px}
+.oled-advice{margin:-14px 0 28px;color:#8f8998;font-size:13px}.oled-advice summary{width:max-content;cursor:pointer;color:#b8a3e8}.oled-advice ul{margin:12px 0 0;padding-left:18px;line-height:1.55}.oled-advice li+li{margin-top:5px}
 .display-check-card>small{display:block;color:#77727f;line-height:1.5}
 .display-check-progress{display:flex;gap:7px;margin-bottom:36px}.display-check-progress i{height:3px;flex:1;background:#29262f;border-radius:3px}.display-check-progress i.active{background:#b69af6}
 .tone-check,.hue-check{display:grid;grid-template-columns:repeat(9,1fr);gap:5px;margin:34px 0 18px}.tone-check i{aspect-ratio:1;border-radius:7px;border:1px solid #ffffff0d}
