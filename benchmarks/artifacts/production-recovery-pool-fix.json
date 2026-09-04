@@ -1,0 +1,212 @@
+{
+  "generatedAt": "2026-09-04T16:54:25.998Z",
+  "durationMs": 204186,
+  "protocol": {
+    "poolSize": 620,
+    "poolSeed": 20260901,
+    "clicks": 150,
+    "seeds": [
+      17,
+      53
+    ],
+    "earlyNoisyClicks": 20,
+    "earlyFlipProbability": 0.3,
+    "productionSchedule": true
+  },
+  "before": {
+    "coverage": {
+      "worst": 0.2510405090124988,
+      "mean": 0.09470479231070866,
+      "red": 0.2510405090124988
+    },
+    "summary": {
+      "runs": 8,
+      "recovered": 6,
+      "error": 0.11806871132046999,
+      "logLoss": 0.5650438700009753,
+      "targetExposures": 47.25,
+      "earlyTargetExposures": 1.875,
+      "firstTargetExposure": 3.5
+    },
+    "runs": [
+      {
+        "target": "red",
+        "seed": 17,
+        "error": 0.12820293735915517,
+        "recovered": true,
+        "logLoss": 0.5557407701501562,
+        "targetExposures": 0,
+        "earlyTargetExposures": 0,
+        "firstTargetExposure": null
+      },
+      {
+        "target": "red",
+        "seed": 53,
+        "error": 0.03910817204535752,
+        "recovered": true,
+        "logLoss": 0.6547375030763434,
+        "targetExposures": 0,
+        "earlyTargetExposures": 0,
+        "firstTargetExposure": null
+      },
+      {
+        "target": "purple",
+        "seed": 17,
+        "error": 0.10222076407934756,
+        "recovered": true,
+        "logLoss": 0.5400923205819046,
+        "targetExposures": 0,
+        "earlyTargetExposures": 0,
+        "firstTargetExposure": null
+      },
+      {
+        "target": "purple",
+        "seed": 53,
+        "error": 0.13017521921069788,
+        "recovered": true,
+        "logLoss": 0.5706574392894228,
+        "targetExposures": 0,
+        "earlyTargetExposures": 0,
+        "firstTargetExposure": null
+      },
+      {
+        "target": "cyan",
+        "seed": 17,
+        "error": 0.18349029237065775,
+        "recovered": false,
+        "logLoss": 0.5834478077557226,
+        "targetExposures": 68,
+        "earlyTargetExposures": 2,
+        "firstTargetExposure": 5
+      },
+      {
+        "target": "cyan",
+        "seed": 53,
+        "error": 0.18391359596308715,
+        "recovered": false,
+        "logLoss": 0.5406539659517223,
+        "targetExposures": 89,
+        "earlyTargetExposures": 3,
+        "firstTargetExposure": 5
+      },
+      {
+        "target": "green",
+        "seed": 17,
+        "error": 0.10954575707783973,
+        "recovered": true,
+        "logLoss": 0.5219415045176266,
+        "targetExposures": 116,
+        "earlyTargetExposures": 7,
+        "firstTargetExposure": 2
+      },
+      {
+        "target": "green",
+        "seed": 53,
+        "error": 0.06789295245761721,
+        "recovered": true,
+        "logLoss": 0.553079648684904,
+        "targetExposures": 105,
+        "earlyTargetExposures": 3,
+        "firstTargetExposure": 2
+      }
+    ]
+  },
+  "after": {
+    "coverage": {
+      "worst": 0.052942828897782505,
+      "mean": 0.02497171917897439,
+      "red": 0.015300377927390002
+    },
+    "summary": {
+      "runs": 8,
+      "recovered": 8,
+      "error": 0.07808152687538505,
+      "logLoss": 0.559938535510138,
+      "targetExposures": 58.5,
+      "earlyTargetExposures": 1.375,
+      "firstTargetExposure": 20.375
+    },
+    "runs": [
+      {
+        "target": "red",
+        "seed": 17,
+        "error": 0.04968391370127547,
+        "recovered": true,
+        "logLoss": 0.5083174046186106,
+        "targetExposures": 78,
+        "earlyTargetExposures": 4,
+        "firstTargetExposure": 16
+      },
+      {
+        "target": "red",
+        "seed": 53,
+        "error": 0.04968391370127547,
+        "recovered": true,
+        "logLoss": 0.5297949816092644,
+        "targetExposures": 82,
+        "earlyTargetExposures": 3,
+        "firstTargetExposure": 16
+      },
+      {
+        "target": "purple",
+        "seed": 17,
+        "error": 0.06334959644058784,
+        "recovered": true,
+        "logLoss": 0.5922843671152112,
+        "targetExposures": 35,
+        "earlyTargetExposures": 0,
+        "firstTargetExposure": 21
+      },
+      {
+        "target": "purple",
+        "seed": 53,
+        "error": 0.06892933735742261,
+        "recovered": true,
+        "logLoss": 0.5861957121485081,
+        "targetExposures": 51,
+        "earlyTargetExposures": 0,
+        "firstTargetExposure": 21
+      },
+      {
+        "target": "cyan",
+        "seed": 17,
+        "error": 0.16922652913224054,
+        "recovered": true,
+        "logLoss": 0.5828466721171395,
+        "targetExposures": 41,
+        "earlyTargetExposures": 1,
+        "firstTargetExposure": 14
+      },
+      {
+        "target": "cyan",
+        "seed": 53,
+        "error": 0.12152675429233371,
+        "recovered": true,
+        "logLoss": 0.5547274637400463,
+        "targetExposures": 48,
+        "earlyTargetExposures": 2,
+        "firstTargetExposure": 14
+      },
+      {
+        "target": "green",
+        "seed": 17,
+        "error": 0.03490754081488207,
+        "recovered": true,
+        "logLoss": 0.5372086914004676,
+        "targetExposures": 77,
+        "earlyTargetExposures": 1,
+        "firstTargetExposure": 19
+      },
+      {
+        "target": "green",
+        "seed": 53,
+        "error": 0.06734462956306266,
+        "recovered": true,
+        "logLoss": 0.5881329913318557,
+        "targetExposures": 56,
+        "earlyTargetExposures": 0,
+        "firstTargetExposure": 42
+      }
+    ]
+  }
+}

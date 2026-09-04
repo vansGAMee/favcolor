@@ -9,6 +9,7 @@ export class PreferenceEnsemble {
   readonly models: MLP[]
   private optimizers: Adam[]
   private seed: number
+  private trainingCalls = 0
 
   constructor(seed = 1, serialized?: ReturnType<typeof serializeNetwork>[]) {
     this.seed = seed
@@ -40,11 +41,14 @@ export class PreferenceEnsemble {
   }
 
   train(examples: TrainingExample[], epochs = 1) {
+    const independent = examples.filter(example => example.pairType !== 'repeated-control')
+    if (!independent.length) return
+    const call = this.trainingCalls++
     for (let m = 0; m < this.models.length; m++) {
-      const rng = seededRandom(this.seed + m * 101 + examples.length * 17)
+      const rng = seededRandom(this.seed + m * 101 + independent.length * 17 + call * 104729)
       for (let epoch = 0; epoch < epochs; epoch++) {
-        for (let j = 0; j < examples.length; j++) {
-          const sample = examples[Math.floor(rng() * examples.length)]
+        for (let j = 0; j < independent.length; j++) {
+          const sample = independent[Math.floor(rng() * independent.length)]
           if (rng() < 0.14) continue
           trainPair(this.models[m], this.optimizers[m], colorFeatures(sample.a), colorFeatures(sample.b), sample.chosenA)
         }

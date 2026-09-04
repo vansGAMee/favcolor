@@ -48,4 +48,5 @@ export interface TrainingExample {
   localHour: number
   weekday: number
   elapsedDays: number
+  pairType?: PairType
 }

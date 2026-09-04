@@ -82,8 +82,11 @@ function fitResidual(examples: TrainingExample[], basePredict: (x: TrainingExamp
 
 export interface FactorEvidence { active: boolean; improvement: number; folds: number; positiveFolds: number }
 
+const independentExamples = (data: TrainingExample[]) => data.filter(example => example.pairType !== 'repeated-control')
+
 export function factorEvidence(data: TrainingExample[], kind: 'context' | 'drift', gate: FactorGate = LOCKED_FACTOR_GATES[kind]): FactorEvidence {
-  const splits = chronologicalSplits(data, Math.max(80, Math.floor(data.length * 0.5)), Math.max(20, Math.floor(data.length * 0.15))).slice(-3)
+  const independent = independentExamples(data)
+  const splits = chronologicalSplits(independent, Math.max(80, Math.floor(independent.length * 0.5)), Math.max(20, Math.floor(independent.length * 0.15))).slice(-3)
   const improvements = splits.map(split => {
     const simple = fitLogistic(split.train, featureDiff)
     const extraFeature = (example: TrainingExample) => {
@@ -124,8 +127,9 @@ export function calculateMetrics(test: TrainingExample[], predict: (x: TrainingE
 }
 
 export function rollingValidation(data: TrainingExample[]): ValidationMetrics | null {
-  if (data.length < 32) return null
-  const splits = chronologicalSplits(data, Math.max(24, data.length - 24), 8).slice(-3)
+  const independent = independentExamples(data)
+  if (independent.length < 32) return null
+  const splits = chronologicalSplits(independent, Math.max(24, independent.length - 24), 8).slice(-3)
   if (!splits.length) return null
   const foldMetrics = splits.map((split, index) => {
     const model = new PreferenceEnsemble(73 + index * 101)

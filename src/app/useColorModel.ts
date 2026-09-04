@@ -22,7 +22,7 @@ function asTraining(choice: ChoiceEvent): TrainingExample {
   return {
     a: choice.colorA, b: choice.colorB, chosenA: choice.chosen === 'a' ? 1 : 0,
     timestamp: choice.timestamp, localHour: choice.localHour, weekday: choice.weekday,
-    elapsedDays: choice.elapsedSinceStartMs / 86_400_000,
+    elapsedDays: choice.elapsedSinceStartMs / 86_400_000, pairType: choice.pairType,
   }
 }
 
