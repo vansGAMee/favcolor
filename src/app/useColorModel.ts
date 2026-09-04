@@ -3,7 +3,7 @@ import type { ChoiceEvent, DailySnapshot, ModelState, OKLCH, TrainingExample, Va
 import { colorToHex, gamutMap, oklabDistance } from '../color/color'
 import { generateCandidatePool } from '../ml/activeLearning/candidates'
 import { selectActivePair } from '../ml/activeLearning/select'
-import { PreferenceEnsemble } from '../ml/ensemble/ensemble'
+import { PreferenceEnsemble, type SerializedEnsemble } from '../ml/ensemble/ensemble'
 import { searchOptimum } from '../ml/preference/search'
 import { evaluateFactors, rollingValidation } from '../ml/validation/validation'
 import { assessReadiness } from '../ml/validation/readiness'
@@ -66,14 +66,18 @@ export function useColorModel() {
   const [error, setError] = useState<string | null>(null)
   const [contextActive, setContextActive] = useState(false)
   const [driftActive, setDriftActive] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
 
   const hydrate = useCallback(async () => {
     try {
       const storedChoices = (await db.getChoices()).sort((a, b) => a.timestamp - b.timestamp)
       const storedSnapshots = await db.getSnapshots()
       const serialized = await db.getModel()
-      if (Array.isArray(serialized) && serialized.length === 5 && serialized.every(model => model && typeof model === 'object' && 'version' in model && model.version === 2)) ensembleRef.current = new PreferenceEnsemble(611, serialized as never)
+      const legacyModel = Array.isArray(serialized) && serialized.length === 5 && serialized.every(model => model && typeof model === 'object' && 'version' in model && model.version === 2)
+      const checkpoint = serialized && typeof serialized === 'object' && !Array.isArray(serialized) && 'version' in serialized && serialized.version === 1 && 'models' in serialized
+      if (legacyModel || checkpoint) ensembleRef.current = new PreferenceEnsemble(611, serialized as SerializedEnsemble)
       else if (storedChoices.length) ensembleRef.current.train(storedChoices.map(asTraining), 10)
+      if (storedChoices.length) appStart.current = Math.min(...storedChoices.map(choice => choice.timestamp - choice.elapsedSinceStartMs))
       const optimum = searchOptimum(ensembleRef.current, 500, storedChoices.length + 1)
       const validation = rollingValidation(storedChoices.map(asTraining))
       setChoices(storedChoices)
@@ -87,20 +91,21 @@ export function useColorModel() {
         setContextActive(factors.context.active)
         setDriftActive(factors.drift.active)
       }
+      setHydrated(true)
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not load local data') }
   }, [])
 
   useEffect(() => { void hydrate() }, [hydrate])
 
   const choose = async (displayedIndex: 0 | 1) => {
-    if (busy) return
+    if (busy || !hydrated) return
     setBusy(true)
     const predictionA = ensembleRef.current.probability(pair.canonical[0], pair.canonical[1])
     const canonicalChosen: 'a' | 'b' = displayedIndex === 0 ? pair.leftColor : pair.leftColor === 'a' ? 'b' : 'a'
     const now = new Date()
     const event: ChoiceEvent = {
       id: crypto.randomUUID(), colorA: pair.canonical[0], colorB: pair.canonical[1], chosen: canonicalChosen,
-      timestamp: now.getTime(), localHour: now.getHours(), weekday: now.getDay(), elapsedSinceStartMs: now.getTime() - appStart.current,
+      timestamp: now.getTime(), localHour: now.getHours(), weekday: now.getDay(), elapsedSinceStartMs: Math.max(now.getTime() - appStart.current, choices.at(-1)?.elapsedSinceStartMs ?? 0),
       reactionTimeMs: Math.max(0, performance.now() - pair.startedAt), leftColor: pair.leftColor, modelVersion: 2, pairType: pair.type,
       distance: oklabDistance(pair.canonical[0], pair.canonical[1]),
     }
@@ -147,11 +152,11 @@ export function useColorModel() {
   }
 
   const importData = async (file: File) => { await db.importJson(await file.text()); await hydrate(); setNotice('Local archive imported.') }
-  const reset = async () => { await db.reset(); ensembleRef.current = new PreferenceEnsemble(611); setChoices([]); setSnapshots([]); setMetrics(null); setEstimate(initialColor); setSpread(Number.NaN); setPair(pairFor(ensembleRef.current, [])); setNotice('Local data reset.') }
+  const reset = async () => { await db.reset(); ensembleRef.current = new PreferenceEnsemble(611); appStart.current = Date.now(); setChoices([]); setSnapshots([]); setMetrics(null); setEstimate(initialColor); setSpread(Number.NaN); setPair(pairFor(ensembleRef.current, [])); setNotice('Local data reset.') }
 
   const readiness = assessReadiness(choices, metrics, spread)
   return {
-    choices, snapshots, pair, estimate, spread, metrics, busy, notice, error, contextActive, driftActive,
+    choices, snapshots, pair, estimate, spread, metrics, busy, hydrated, notice, error, contextActive, driftActive,
     modelState: readiness.state, readiness, choose, exportData, importData, reset,
   }
 }

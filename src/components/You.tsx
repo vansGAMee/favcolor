@@ -8,7 +8,7 @@ import { stateLabel, translate, type Language } from '../app/i18n'
 
 const metric = (value: number | undefined, format = (x: number) => x.toFixed(3)) => value === undefined || !Number.isFinite(value) ? 'Not enough evidence yet' : format(value)
 
-export function You({ model, language, sharing, onSharingChange }: { model: ReturnTypeOfColorModel; language: Language; sharing: boolean; onSharingChange: (enabled: boolean) => void }) {
+export function You({ model, language, sharing, onSharingChange, onRecheckDisplay }: { model: ReturnTypeOfColorModel; language: Language; sharing: boolean; onSharingChange: (enabled: boolean) => void; onRecheckDisplay: () => void }) {
   const t = (english: string, russian: string) => translate(language, english, russian)
   const input = useRef<HTMLInputElement>(null)
   const enough = (model.metrics?.count ?? 0) >= 8
@@ -44,6 +44,7 @@ export function You({ model, language, sharing, onSharingChange }: { model: Retu
         <label className="sharing-control"><input type="checkbox" role="switch" aria-label={t('Help improve the model', 'Помочь улучшить модель')} checked={sharing} onChange={event => onSharingChange(event.target.checked)} /><span className="sharing-switch"><i /></span><span><strong>{t('Help improve the model', 'Помочь улучшить модель')}</strong><small>{t('Voluntarily send anonymous color choices for a future shared model.', 'Добровольно отправлять обезличенные выборы цветов для будущей общей модели.')}</small></span></label>
       </div>
       <div className="data-actions">
+        <button onClick={onRecheckDisplay}>{t('Recheck display', 'Проверить экран')}</button>
         <button onClick={() => void model.exportData()}>{t('Export JSON', 'Скачать JSON')}</button>
         <button onClick={() => input.current?.click()}>{t('Import JSON', 'Загрузить JSON')}</button>
         <input ref={input} hidden type="file" accept="application/json" onChange={event => { const file = event.target.files?.[0]; if (file) void model.importData(file) }} />

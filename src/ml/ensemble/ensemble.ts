@@ -1,7 +1,7 @@
 import type { OKLCH, TrainingExample } from '../../app/types'
 import { colorFeatures } from '../../color/color'
 import { MLP, deserializeNetwork, serializeNetwork } from '../core/network'
-import { Adam } from '../optimizer/adam'
+import { Adam, type SerializedAdam } from '../optimizer/adam'
 import { pairProbability, trainPair } from '../preference/pairwise'
 import { seededRandom } from '../simulation/oracle'
 
@@ -11,10 +11,12 @@ export class PreferenceEnsemble {
   private seed: number
   private trainingCalls = 0
 
-  constructor(seed = 1, serialized?: ReturnType<typeof serializeNetwork>[]) {
+  constructor(seed = 1, serialized?: SerializedEnsemble | ReturnType<typeof serializeNetwork>[]) {
     this.seed = seed
-    this.models = serialized?.map(deserializeNetwork) ?? Array.from({ length: 5 }, (_, i) => new MLP(seed + i * 9973))
-    this.optimizers = this.models.map(model => new Adam(model.parameters().length, 0.0025))
+    const networks = Array.isArray(serialized) ? serialized : serialized?.models
+    this.models = networks?.map(deserializeNetwork) ?? Array.from({ length: 5 }, (_, i) => new MLP(seed + i * 9973))
+    this.optimizers = this.models.map((model, index) => new Adam(model.parameters().length, 0.0025, 0.9, 0.999, 1e-8, Array.isArray(serialized) ? undefined : serialized?.optimizers[index]))
+    this.trainingCalls = Array.isArray(serialized) ? 0 : serialized?.trainingCalls ?? 0
   }
 
   utility(color: OKLCH, modelIndex?: number) {
@@ -64,5 +66,12 @@ export class PreferenceEnsemble {
     }, 0) / examples.length
   }
 
-  serialize() { return this.models.map(serializeNetwork) }
+  serialize(): SerializedEnsemble { return { version: 1, models: this.models.map(serializeNetwork), optimizers: this.optimizers.map(optimizer => optimizer.serialize()), trainingCalls: this.trainingCalls } }
+}
+
+export type SerializedEnsemble = {
+  version: 1
+  models: ReturnType<typeof serializeNetwork>[]
+  optimizers: SerializedAdam[]
+  trainingCalls: number
 }

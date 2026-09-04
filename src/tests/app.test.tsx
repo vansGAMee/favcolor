@@ -3,11 +3,13 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { App } from '../App'
 import { ColorDatabase } from '../storage/db'
+import { DISPLAY_CHECK_KEY } from '../components/DisplayCheck'
 
 describe('product flow', () => {
   beforeEach(async () => {
     await new ColorDatabase('your-color').reset()
     localStorage.clear()
+    localStorage.setItem(DISPLAY_CHECK_KEY, 'complete')
   })
 
   it('records one choice without submit and advances to a new pair', async () => {

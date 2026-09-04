@@ -4,6 +4,7 @@ import { translate, type Language } from './app/i18n'
 import { Discover } from './components/Discover'
 import { You } from './components/You'
 import { TrainingPrompt } from './components/TrainingPrompt'
+import { DisplayCheck, DISPLAY_CHECK_KEY } from './components/DisplayCheck'
 import { setTrainingSharing, trainingSharingEnabled } from './data/trainingCollection'
 import './styles.css'
 
@@ -16,6 +17,8 @@ export function App() {
     return navigator.language.toLowerCase().startsWith('ru') ? 'ru' : 'en'
   })
   const model = useColorModel()
+  const [recheckingDisplay, setRecheckingDisplay] = useState(false)
+  const [displayCheckComplete, setDisplayCheckComplete] = useState(() => localStorage.getItem(DISPLAY_CHECK_KEY) === 'complete')
   const t = (english: string, russian: string) => translate(language, english, russian)
   useEffect(() => {
     document.documentElement.lang = language
@@ -23,6 +26,10 @@ export function App() {
   }, [language])
   const enableSharing = () => { setTrainingSharing(true); setSharingEnabled(true) }
   const updateSharing = (enabled: boolean) => { setTrainingSharing(enabled); setSharingEnabled(enabled) }
+  const finishDisplayCheck = () => { localStorage.setItem(DISPLAY_CHECK_KEY, 'complete'); setDisplayCheckComplete(true); setRecheckingDisplay(false) }
+  if (!model.hydrated) return <main className="hydration-screen" aria-live="polite">{t('Restoring your color…', 'Восстанавливаем ваш цвет…')}</main>
+  const needsDisplayCheck = recheckingDisplay || (model.choices.length === 0 && !displayCheckComplete)
+  if (needsDisplayCheck) return <DisplayCheck language={language} onFinish={finishDisplayCheck} />
   return <div className="app-shell">
     <a className="skip-link" href="#main-content">{t('Skip to content', 'Перейти к содержанию')}</a>
     <header className="site-header">
@@ -35,6 +42,6 @@ export function App() {
     </header>
     {model.error && <div className="error-banner" role="alert">{model.error}</div>}
     <TrainingPrompt choiceCount={model.choices.length} sharingEnabled={sharingEnabled} onHelp={enableSharing} />
-    <div className="tab-stage" id="main-content" key={tab}>{tab === 'discover' ? <Discover model={model} language={language} /> : <You model={model} language={language} sharing={sharingEnabled} onSharingChange={updateSharing} />}</div>
+    <div className="tab-stage" id="main-content" key={tab}>{tab === 'discover' ? <Discover model={model} language={language} /> : <You model={model} language={language} sharing={sharingEnabled} onSharingChange={updateSharing} onRecheckDisplay={() => setRecheckingDisplay(true)} />}</div>
   </div>
 }

@@ -38,9 +38,9 @@ describe('online training evidence', () => {
     const updatePatterns: string[] = []
 
     for (let index = 0; index < 16; index++) {
-      const before = ensemble.serialize().map(model => JSON.stringify(model))
+      const before = ensemble.serialize().models.map(model => JSON.stringify(model))
       ensemble.train([example(index) as TrainingExample])
-      const after = ensemble.serialize().map(model => JSON.stringify(model))
+      const after = ensemble.serialize().models.map(model => JSON.stringify(model))
       updatePatterns.push(JSON.stringify(after.map((model, member) => model !== before[member])))
     }
 
