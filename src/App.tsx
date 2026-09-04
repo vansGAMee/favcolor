@@ -7,6 +7,7 @@ import { TrainingPrompt } from './components/TrainingPrompt'
 import { DisplayCheck, DISPLAY_CHECK_KEY } from './components/DisplayCheck'
 import { Method } from './components/Method'
 import { SharedColor } from './components/SharedColor'
+import { TeaSupportPrompt } from './components/TeaSupportPrompt'
 import { setTrainingSharing, trainingSharingEnabled } from './data/trainingCollection'
 import { parseSharedColor } from './sharing/colorShare'
 import './styles.css'
@@ -56,5 +57,6 @@ export function App() {
     {model.error && <div className="error-banner" role="alert">{model.error}</div>}
     <TrainingPrompt choiceCount={model.choices.length} sharingEnabled={sharingEnabled} onHelp={enableSharing} />
     <div className="tab-stage" id="main-content" key={tab}>{tab === 'discover' ? <Discover model={model} language={language} showReadyResult={model.modelState === 'Ready' && !readyNoticeSeen} onOpenResult={openResult} /> : tab === 'you' ? <You model={model} language={language} sharing={sharingEnabled} onSharingChange={updateSharing} onRecheckDisplay={() => setRecheckingDisplay(true)} /> : <Method language={language} />}</div>
+    {tab === 'you' && <TeaSupportPrompt choiceCount={model.choices.length} language={language} />}
   </div>
 }

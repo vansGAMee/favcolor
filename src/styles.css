@@ -60,6 +60,17 @@ nav button[aria-selected="true"]::after { content: ""; position: absolute; left:
 .training-prompt button:active { transform: scale(.96); }
 .training-prompt button.quiet { border-color: var(--line-strong); background: transparent; color: var(--muted); }
 .training-prompt button.quiet:hover { color: var(--ink); background: rgba(255, 255, 255, .045); }
+.tea-prompt { position: fixed; z-index: 22; right: 22px; bottom: 22px; width: min(390px, calc(100vw - 32px)); padding: 13px; display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 10px 12px; border: 1px solid rgba(210, 184, 145, .2); border-radius: 16px; background: rgba(18, 17, 18, .96); box-shadow: 0 20px 58px rgba(0, 0, 0, .5), inset 0 1px rgba(255, 255, 255, .055); backdrop-filter: blur(18px); }
+.tea-prompt-icon { grid-row: 1 / 3; width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid rgba(210, 184, 145, .18); border-radius: 12px; background: rgba(210, 184, 145, .08); font-size: 17px; }
+.tea-prompt-copy strong { display: block; color: #eee9e2; font-size: 10px; font-weight: 650; letter-spacing: .01em; }
+.tea-prompt-copy p { max-width: 29ch; margin: 4px 0 0; color: var(--muted); font-size: 9px; line-height: 1.45; }
+.tea-prompt-actions { grid-column: 2; display: flex; gap: 7px; }
+.tea-prompt-actions a, .tea-prompt-actions button { min-height: 34px; padding: 0 12px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(210, 184, 145, .28); border-radius: 9px; background: rgba(210, 184, 145, .1); color: #eee9e2; font-size: 9px; font-weight: 650; text-decoration: none; cursor: pointer; transition: transform 120ms ease, border-color 150ms ease, background-color 150ms ease; }
+.tea-prompt-actions button { border-color: var(--line); background: transparent; color: var(--muted); }
+.tea-prompt-actions a:hover { border-color: rgba(225, 199, 159, .5); background: rgba(210, 184, 145, .16); }
+.tea-prompt-actions button:hover { border-color: var(--line-strong); color: var(--ink); background: rgba(255, 255, 255, .04); }
+.tea-prompt-actions a:active, .tea-prompt-actions button:active { transform: scale(.96); }
+.tea-prompt-actions a:focus-visible { outline: 2px solid #dbc39d; outline-offset: 3px; }
 .tab-stage { animation: tab-enter 220ms cubic-bezier(.22, .8, .25, 1) both; }
 
 .discover, .you { width: min(1480px, 100%); margin: 0 auto; }
@@ -364,6 +375,8 @@ nav button[aria-selected="true"]::after { content: ""; position: absolute; left:
   .data-actions { justify-content: flex-start; margin-top: 25px; }
   .data-actions button { flex: 1 1 120px; min-height: 46px; }
   .display-note { padding-inline: 18px; }
+  .tea-prompt { left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); width: auto; }
+  .tea-prompt-actions a, .tea-prompt-actions button { min-height: 40px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -394,4 +407,5 @@ nav button[aria-selected="true"]::after { content: ""; position: absolute; left:
 .shared-color-page{min-height:100dvh;display:grid;place-items:center;padding:32px 20px;background:radial-gradient(ellipse 55% 35% at 50% 18%,color-mix(in srgb,var(--shared-color) 13%,transparent),transparent 75%),#080809}.shared-color-card{width:min(520px,100%);padding:18px;border:1px solid var(--line);border-radius:20px;background:#101012;box-shadow:0 30px 90px #0007}.shared-color-card h1{margin:0 0 22px;font-size:clamp(34px,7vw,58px);line-height:.95;letter-spacing:-.055em}.shared-color-swatch{min-height:min(48vh,400px);border:1px solid #ffffff1f;border-radius:14px;background:var(--shared-color);box-shadow:inset 0 1px #ffffff1f}.shared-color-card>strong{display:block;margin:22px 0 10px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:clamp(28px,7vw,42px);letter-spacing:-.05em}.shared-color-card>p:not(.eyebrow){max-width:43ch;margin:0;color:var(--muted);font-size:11px;line-height:1.6}.shared-color-card>a{display:inline-flex;margin-top:22px;color:var(--ink);font-size:11px;font-weight:650;text-decoration:none}.shared-color-card>a span{margin-left:7px;transition:transform 150ms ease}.shared-color-card>a:hover{color:#c8b4ff}.shared-color-card>a:hover span{transform:translateX(3px)}
 @media(max-width:620px){.result-ready-notice{left:16px;right:16px;bottom:16px;min-width:0;transform:none}.result-ready-notice:active{transform:scale(.985)}.shared-color-page{padding:12px}.shared-color-card{padding:12px;border-radius:17px}.shared-color-swatch{min-height:52vh}.shared-color-card h1{margin-inline:4px}.shared-color-card>.eyebrow,.shared-color-card>strong,.shared-color-card>p,.shared-color-card>a{margin-left:4px;margin-right:4px}}
 @media(prefers-reduced-motion:no-preference){.result-ready-notice{animation:result-ready-in 300ms cubic-bezier(.2,.8,.2,1) both}.shared-color-card{animation:shared-color-in 320ms cubic-bezier(.2,.8,.2,1) both}@keyframes result-ready-in{from{opacity:0;transform:translate(-50%,8px) scale(.98)}to{opacity:1;transform:translate(-50%,0) scale(1)}}@keyframes shared-color-in{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}}
+@media(prefers-reduced-motion:no-preference){.tea-prompt{animation:tea-prompt-in 280ms cubic-bezier(.2,.8,.2,1) both}@keyframes tea-prompt-in{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}}
 @media(max-width:620px) and (prefers-reduced-motion:no-preference){.result-ready-notice{animation-name:result-ready-in-mobile}@keyframes result-ready-in-mobile{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}}
