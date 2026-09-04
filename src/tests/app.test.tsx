@@ -59,4 +59,15 @@ describe('product flow', () => {
       expect(buffer.observations[0].predictionA).toEqual(expect.any(Number))
     })
   })
+
+  it('opens a separate methodology page with real results and honest boundaries', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(await screen.findByRole('tab', { name: 'How it works' }))
+    expect(screen.getByRole('heading', { name: /how favcolor learns/i })).toBeInTheDocument()
+    expect(screen.getByText('Nikolai Dubovskoy')).toBeInTheDocument()
+    expect(screen.getByText('8 / 8')).toBeInTheDocument()
+    expect(screen.getByText(/synthetic users are software tests/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /development history/i })).toBeInTheDocument()
+  })
 })

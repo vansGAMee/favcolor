@@ -5,11 +5,12 @@ import { Discover } from './components/Discover'
 import { You } from './components/You'
 import { TrainingPrompt } from './components/TrainingPrompt'
 import { DisplayCheck, DISPLAY_CHECK_KEY } from './components/DisplayCheck'
+import { Method } from './components/Method'
 import { setTrainingSharing, trainingSharingEnabled } from './data/trainingCollection'
 import './styles.css'
 
 export function App() {
-  const [tab, setTab] = useState<'discover' | 'you'>('discover')
+  const [tab, setTab] = useState<'discover' | 'you' | 'method'>('discover')
   const [sharingEnabled, setSharingEnabled] = useState(trainingSharingEnabled)
   const [language, setLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem('favcolor-language')
@@ -34,14 +35,15 @@ export function App() {
     <a className="skip-link" href="#main-content">{t('Skip to content', 'Перейти к содержанию')}</a>
     <header className="site-header">
       <button className="wordmark" onClick={() => setTab('discover')} aria-label="Your Color home"><span className="mark" /><span>Favcolor</span><small>Personal lab</small></button>
-      <nav className={`tabs ${tab === 'you' ? 'show-you' : 'show-discover'}`} role="tablist" aria-label={t('Main navigation', 'Основная навигация')}>
+      <nav className={`tabs show-${tab}`} role="tablist" aria-label={t('Main navigation', 'Основная навигация')}>
         <button id="discover-tab" role="tab" aria-controls="discover-panel" aria-selected={tab === 'discover'} tabIndex={tab === 'discover' ? 0 : -1} onKeyDown={event => { if (event.key === 'ArrowRight') { event.preventDefault(); setTab('you'); requestAnimationFrame(() => document.getElementById('you-tab')?.focus()) } }} onClick={() => setTab('discover')}>{t('Discover', 'Выбор')}</button>
-        <button id="you-tab" role="tab" aria-controls="you-panel" aria-selected={tab === 'you'} tabIndex={tab === 'you' ? 0 : -1} onKeyDown={event => { if (event.key === 'ArrowLeft') { event.preventDefault(); setTab('discover'); requestAnimationFrame(() => document.getElementById('discover-tab')?.focus()) } }} onClick={() => setTab('you')}>{t('You', 'Мой цвет')}</button>
+        <button id="you-tab" role="tab" aria-controls="you-panel" aria-selected={tab === 'you'} tabIndex={tab === 'you' ? 0 : -1} onKeyDown={event => { if (event.key === 'ArrowLeft') { event.preventDefault(); setTab('discover'); requestAnimationFrame(() => document.getElementById('discover-tab')?.focus()) } else if (event.key === 'ArrowRight') { event.preventDefault(); setTab('method'); requestAnimationFrame(() => document.getElementById('method-tab')?.focus()) } }} onClick={() => setTab('you')}>{t('You', 'Мой цвет')}</button>
+        <button id="method-tab" role="tab" aria-controls="method-panel" aria-selected={tab === 'method'} tabIndex={tab === 'method' ? 0 : -1} onKeyDown={event => { if (event.key === 'ArrowLeft') { event.preventDefault(); setTab('you'); requestAnimationFrame(() => document.getElementById('you-tab')?.focus()) } }} onClick={() => setTab('method')}>{t('How it works', 'Как работает')}</button>
       </nav>
       <div className="header-tools"><span className="local-badge"><i />{t('Private · On device', 'Приватно · На устройстве')}</span><button className="language-toggle" onClick={() => setLanguage(language === 'en' ? 'ru' : 'en')} aria-label={t('Switch to Russian', 'Переключить на английский')}>{language === 'en' ? 'RU' : 'EN'}</button></div>
     </header>
     {model.error && <div className="error-banner" role="alert">{model.error}</div>}
     <TrainingPrompt choiceCount={model.choices.length} sharingEnabled={sharingEnabled} onHelp={enableSharing} />
-    <div className="tab-stage" id="main-content" key={tab}>{tab === 'discover' ? <Discover model={model} language={language} /> : <You model={model} language={language} sharing={sharingEnabled} onSharingChange={updateSharing} onRecheckDisplay={() => setRecheckingDisplay(true)} />}</div>
+    <div className="tab-stage" id="main-content" key={tab}>{tab === 'discover' ? <Discover model={model} language={language} /> : tab === 'you' ? <You model={model} language={language} sharing={sharingEnabled} onSharingChange={updateSharing} onRecheckDisplay={() => setRecheckingDisplay(true)} /> : <Method language={language} />}</div>
   </div>
 }

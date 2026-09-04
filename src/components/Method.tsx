@@ -1,0 +1,49 @@
+import { translate, type Language } from '../app/i18n'
+
+export function Method({ language }: { language: Language }) {
+  const t = (english: string, russian: string) => translate(language, english, russian)
+  const steps = [
+    [t('You choose', 'Вы выбираете'), t('Two displayable colors are shown with equal weight. One tap creates a chronological preference—not a rating or personality answer.', 'Два доступных экрану цвета показаны на равных. Одно нажатие создаёт последовательную запись предпочтения — не оценку и не ответ теста личности.')],
+    [t('The model learns', 'Модель обучается'), t('Five small neural networks update locally with Bradley–Terry pair loss and Adam. No pretrained model tells them what you should like.', 'Пять небольших нейросетей обновляются локально с парной функцией потерь Bradley–Terry и Adam. Предобученная модель не решает за вас, что вам нравится.')],
+    [t('The next pair is chosen', 'Выбирается следующая пара'), t('The app balances uncertain comparisons, new gamut regions, useful challengers, and protection against repetitive query loops.', 'Приложение сочетает неопределённые сравнения, новые области цветового охвата, полезные альтернативы и защиту от повторяющихся циклов.')],
+    [t('The estimate is challenged', 'Оценка проверяется'), t('Future choices, repeated controls, local challengers, and ensemble agreement decide whether the estimate is still learning or ready.', 'Будущие выборы, контрольные повторы, локальные альтернативы и согласие ансамбля определяют, продолжает ли оценка обучение или уже готова.')],
+  ]
+  return <main className="method-page" id="method-panel" role="tabpanel" aria-labelledby="method-tab">
+    <section className="method-hero">
+      <div className="method-hero-copy"><p className="eyebrow">{t('Method · local neural learning', 'Метод · локальное обучение')}</p><h1>{t('How Favcolor learns your color', 'Как Favcolor изучает ваш цвет')}</h1><p>{t('A transparent look at what happens after every choice, how the system was tested, and what its result does—and does not—mean.', 'Честно о том, что происходит после каждого выбора, как система проверялась и что её результат означает — и чего не означает.')}</p></div>
+      <div className="method-spectrum" aria-hidden="true"><i /><i /><i /><i /><i /><i /><span /></div>
+      <div className="method-index"><a href="#method-process">01 · {t('Process', 'Процесс')}</a><a href="#method-evidence">02 · {t('Evidence', 'Тесты')}</a><a href="#method-history">03 · {t('History', 'История')}</a><a href="#method-boundary">04 · {t('Limits', 'Ограничения')}</a></div>
+    </section>
+
+    <section className="method-process" id="method-process">
+      <header><p className="eyebrow">01 · {t('One choice at a time', 'По одному выбору')}</p><h2>{t('From instinct to estimate', 'От ощущения к оценке')}</h2></header>
+      <div className="process-line">{steps.map(([title, body], index) => <article key={title}><span>0{index + 1}</span><div><h3>{title}</h3><p>{body}</p></div></article>)}</div>
+      <aside className="model-signature"><span>{t('Current neural model', 'Текущая нейросеть')}</span><strong>Nikolai Dubovskoy</strong><small>{t('A quiet tribute, not a scientific designation · 5 networks · 6→24→16→1 · 585 parameters each', 'Небольшая дань уважения, не научное обозначение · 5 сетей · 6→24→16→1 · по 585 параметров')}</small></aside>
+    </section>
+
+    <section className="method-evidence" id="method-evidence">
+      <header><div><p className="eyebrow">02 · {t('Recorded evidence', 'Зафиксированные результаты')}</p><h2>{t('Tests the code can fail', 'Тесты, которые код может провалить')}</h2></div><p>{t('Numbers below come from committed deterministic artifacts. They are not live user metrics and were not invented for this page.', 'Числа ниже взяты из сохранённых детерминированных артефактов. Это не метрики пользователей и они не придуманы для этой страницы.')}</p></header>
+      <div className="evidence-grid">
+        <article className="evidence-lead"><span>{t('Recovery after noisy start', 'Восстановление после шумного старта')}</span><strong>8 / 8</strong><p>{t('synthetic targets recovered by 150 clicks', 'синтетических целей найдено к 150 выборам')}</p><div className="result-bars" aria-hidden="true">{[49,63,69,100,35,67,34,67].map((height,index)=><i key={index} style={{height:`${height}%`}} />)}</div></article>
+        <article><span>{t('Mean optimum error', 'Средняя ошибка оптимума')}</span><strong>0.078</strong><p>{t('OKLab distance · lower is better', 'расстояние OKLab · меньше лучше')}</p></article>
+        <article><span>{t('Future log-loss', 'Ошибка будущих ответов')}</span><strong>0.560</strong><p>{t('prequential · lower is better', 'последовательная проверка · меньше лучше')}</p></article>
+        <article><span>{t('Worst coverage gap', 'Худший пробел охвата')}</span><strong>0.053</strong><p>{t('across red, purple, cyan, and green', 'для красного, фиолетового, голубого и зелёного')}</p></article>
+      </div>
+      <p className="evidence-caption">{t('Protocol: 4 hidden targets × 2 deterministic seeds, 20 noisy early answers, 150 online test-then-train clicks. Synthetic users are software tests, not evidence about human psychology.', 'Протокол: 4 скрытые цели × 2 детерминированных seed, 20 ранних шумных ответов, 150 последовательных циклов test-then-train. Синтетические пользователи — это тесты программы, а не доказательство о психологии людей.')}</p>
+      <div className="gate-strip"><div><strong>0 / 16</strong><span>{t('false context activations on untouched null seeds', 'ложных включений контекста на нетронутых null-seed')}</span></div><div><strong>0 / 16</strong><span>{t('false drift activations on untouched stable seeds', 'ложных включений дрейфа на нетронутых стабильных seed')}</span></div><p>{t('Weak real effects are intentionally missed more often than false effects are announced.', 'Слабый реальный эффект намеренно чаще пропускается, чем объявляется ложный.')}</p></div>
+    </section>
+
+    <section className="method-history" id="method-history">
+      <header><p className="eyebrow">03 · {t('Built by removing assumptions', 'Развитие через проверку предположений')}</p><h2>{t('Development history', 'История разработки')}</h2></header>
+      <div className="history-track">
+        <article><span>{t('Foundation', 'Основа')}</span><h3>{t('A neural preference learner in the browser', 'Нейросеть предпочтений в браузере')}</h3><p>{t('Shared utility, pairwise loss, custom backpropagation, and local persistence established the first complete loop.', 'Общая полезность, парная функция потерь, собственное обратное распространение и локальное хранение замкнули первый полный цикл.')}</p></article>
+        <article><span>{t('Validation', 'Проверка')}</span><h3>{t('Future answers became the judge', 'Судья — только будущие ответы')}</h3><p>{t('Chronological folds and independently calibrated context and drift gates replaced flattering in-sample scores.', 'Хронологические выборки и независимо откалиброванные пороги контекста и дрейфа заменили привлекательные оценки на обучающих данных.')}</p></article>
+        <article><span>{t('Color integrity', 'Цветовая корректность')}</span><h3>{t('Gray stopped pretending to have a hue', 'Серый перестал притворяться цветным')}</h3><p>{t('Hue features now fade with chroma, and older saved models rebuild from their original choices.', 'Признаки оттенка теперь затухают вместе с насыщенностью, а старые сохранённые модели переобучаются из исходных выборов.')}</p></article>
+        <article><span>{t('Recovery', 'Восстановление')}</span><h3>{t('Exploration learned to disagree', 'Исследование научилось возражать')}</h3><p>{t('Coverage challengers, novelty, and varied controls help the learner escape an early wrong region without hardcoded favorite colors.', 'Проверка новых областей, разнообразие и разные контрольные пары помогают выйти из ранней ошибки без захардкоженных любимых цветов.')}</p></article>
+        <article><span>{t('Continuity', 'Непрерывность')}</span><h3>{t('Reloading no longer resets learning momentum', 'Перезагрузка больше не сбрасывает ход обучения')}</h3><p>{t('Weights, Adam moments, training step, choices, and model time continue from the same local checkpoint.', 'Веса, моменты Adam, шаг обучения, выборы и модельное время продолжаются из одной локальной контрольной точки.')}</p></article>
+      </div>
+    </section>
+
+    <section className="method-boundary" id="method-boundary"><p className="eyebrow">04 · {t('The honest boundary', 'Честная граница')}</p><div><h2>{t('A useful estimate. Not an absolute truth.', 'Полезная оценка. Не абсолютная истина.')}</h2><p>{t('“Your color” means the model’s current best estimate under this pairwise procedure. It is not a diagnosis, a personality type, or proof of one permanent favorite.', '«Ваш цвет» — текущая лучшая оценка модели в рамках этой процедуры парных сравнений. Это не диагноз, не тип личности и не доказательство одного вечного любимого цвета.')}</p></div><div className="boundary-notes"><p>{t('Screens, brightness, color profiles, ambient light, and fatigue can change appearance and choice.', 'Экран, яркость, цветовой профиль, освещение и усталость могут менять вид цвета и выбор.')}</p><p>{t('The production model is a real neural network trained from your choices; benchmarks only test whether the software can recover known simulated targets.', 'Production-модель — настоящая нейросеть, которая учится на ваших выборах; benchmark лишь проверяют, может ли программа найти известные симулированные цели.')}</p><p>{t('Your model and history stay in this browser. Anonymous research sharing remains strictly opt-in.', 'Ваша модель и история остаются в браузере. Анонимная отправка данных для исследований включается только добровольно.')}</p></div></section>
+  </main>
+}
