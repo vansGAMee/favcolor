@@ -1,10 +1,11 @@
-import { useRef, type CSSProperties } from 'react'
+import { useRef, useState, type CSSProperties } from 'react'
 import type { ReturnTypeOfColorModel } from './types'
 import { colorCss, colorToHex } from '../color/color'
 import { HistoryGrid } from './HistoryGrid'
 import { EvolutionChart } from './EvolutionChart'
 import { TastePortrait } from './TastePortrait'
 import { stateLabel, translate, type Language } from '../app/i18n'
+import { shareColor } from '../sharing/colorShare'
 
 const metric = (value: number | undefined, format = (x: number) => x.toFixed(3)) => value === undefined || !Number.isFinite(value) ? 'Not enough evidence yet' : format(value)
 
@@ -16,13 +17,20 @@ export function You({ model, language, sharing, onSharingChange, onRecheckDispla
   const stable = model.modelState === 'Ready'
   const accuracy = enough && model.metrics?.accuracy !== undefined ? model.metrics.accuracy : null
   const loss = enough && model.metrics?.logLoss !== undefined ? model.metrics.logLoss : null
+  const [shareStatus, setShareStatus] = useState('')
+  const shareResult = async () => {
+    try {
+      const status = await shareColor(estimateHex, t('My Favcolor result', 'Мой результат Favcolor'), t(`My color is ${estimateHex}`, `Мой цвет — ${estimateHex}`))
+      setShareStatus(status === 'copied' ? t('Link copied', 'Ссылка скопирована') : status === 'shared' ? t('Shared', 'Отправлено') : '')
+    } catch { setShareStatus(t('Could not share', 'Не удалось поделиться')) }
+  }
   return <main className="you" id="you-panel" role="tabpanel" aria-labelledby="you-tab">
     <div className="you-heading"><div><p className="eyebrow">{t('What the model has learned', 'Что узнала модель')}</p><h1>{t('Your color,', 'Ваш цвет')}<br />{t('made visible.', 'в деталях.')}</h1></div><p>{t('A living estimate built from your answers—not a personality quiz, and never uploaded.', 'Живой результат, основанный на ваших ответах. Это не тест личности, и данные никуда не отправляются.')}</p></div>
     <section className="profile-grid" style={{ '--estimate-color': estimateHex } as CSSProperties}>
       <article className="estimate-block">
         <div className="estimate-topline"><span>{stable ? t('Stable digital estimate', 'Стабильная цифровая оценка') : t('Current digital estimate', 'Текущая цифровая оценка')}</span><span className="state-pill"><i />{stateLabel(model.modelState, language)}</span></div>
         <div className="estimate-swatch" style={{ backgroundColor: colorCss(model.estimate) }}><span>{stable ? t('Your current color', 'Ваш текущий цвет') : t('Still learning', 'Ещё изучаем')}</span></div>
-        <div className="estimate-details"><div><p className="eyebrow">{t('Current color', 'Текущий цвет')}</p><div className="estimate-hex">{estimateHex}</div></div><div className="oklch"><span>OKLCH</span><strong>{model.estimate.l.toFixed(3)}</strong><strong>{model.estimate.c.toFixed(3)}</strong><strong>{Math.round(model.estimate.h)}°</strong></div></div>
+        <div className="estimate-details"><div><p className="eyebrow">{t('Current color', 'Текущий цвет')}</p><div className="estimate-hex">{estimateHex}</div><button className="share-result" onClick={() => void shareResult()}>{t('Share', 'Поделиться')}</button><span className="share-status" role="status">{shareStatus}</span></div><div className="oklch"><span>OKLCH</span><strong>{model.estimate.l.toFixed(3)}</strong><strong>{model.estimate.c.toFixed(3)}</strong><strong>{Math.round(model.estimate.h)}°</strong></div></div>
       </article>
       <section className="learning-panel" aria-labelledby="learning-title">
         <div className="section-heading compact-heading"><div><p className="eyebrow">{t('Based on real answers', 'По реальным ответам')}</p><h2 id="learning-title">{t('How well it knows you', 'Насколько модель вас понимает')}</h2></div><span>{t('In order · On device', 'По порядку · На устройстве')}</span></div>

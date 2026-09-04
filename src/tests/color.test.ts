@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { colorFeatures, gamutMap, inGamut, oklabDistance, oklchToSrgb, srgbToOklch, toHex, wrapHue } from '../color/color'
+import { colorFeatures, colorToHex, gamutMap, inGamut, oklabDistance, oklchToSrgb, srgbToOklch, toHex, wrapHue } from '../color/color'
 
 describe('OKLCH color math', () => {
   it('converts display endpoints and known red without non-finite values', () => {
@@ -42,5 +42,10 @@ describe('OKLCH color math', () => {
     const grayAtCyanHue = colorFeatures({ l: .6, c: 0, h: 195 })
     expect(grayAtRedHue).toEqual(grayAtCyanHue)
     expect(grayAtRedHue.slice(2)).toEqual([0, 0, 0, 0])
+  })
+
+  it('preserves genuine black without collapsing the searchable non-black range', () => {
+    expect(colorToHex({ l: 0, c: 0, h: 0 })).toBe('#000000')
+    expect(colorToHex({ l: 0.165, c: 0, h: 0 })).not.toBe('#000000')
   })
 })

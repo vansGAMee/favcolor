@@ -22,6 +22,21 @@ describe('product flow', () => {
     await waitFor(() => expect(screen.getAllByRole('button', { name: /choose/i })[0].getAttribute('aria-label')).not.toBe(firstLabel))
   })
 
+  it('reveals a hidden consistency-check code without recording a choice', async () => {
+    const user = userEvent.setup()
+    const database = new ColorDatabase('your-color')
+    render(<App />)
+    for (let count = 1; count <= 6; count++) {
+      await user.click((await screen.findAllByRole('button', { name: /choose/i }))[0])
+      await waitFor(async () => expect(await database.getChoices()).toHaveLength(count))
+      await waitFor(() => expect(screen.getAllByRole('button', { name: /choose/i })[0]).toHaveAttribute('aria-disabled', 'false'))
+    }
+    const reveal = screen.getAllByRole('button', { name: /show color code/i })[0]
+    await user.click(reveal)
+    expect(screen.getAllByRole('button', { name: /choose #[0-9a-f]{6}/i })).toHaveLength(1)
+    expect(await database.getChoices()).toHaveLength(6)
+  })
+
   it('shows honest unavailable metrics and a real saved history day', async () => {
     const user = userEvent.setup()
     render(<App />)

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChoiceEvent, DailySnapshot, ModelState, OKLCH, TrainingExample, ValidationMetrics } from './types'
 import { colorToHex, gamutMap, oklabDistance } from '../color/color'
+import { ensureUsefulRenderedPair } from '../color/displayPair'
 import { generateCandidatePool } from '../ml/activeLearning/candidates'
 import { selectActivePair } from '../ml/activeLearning/select'
 import { PreferenceEnsemble, type SerializedEnsemble } from '../ml/ensemble/ensemble'
@@ -33,21 +34,26 @@ function controlExpectedChoice(event: ChoiceEvent, previousChoices: ChoiceEvent[
 }
 
 function pairFor(ensemble: PreferenceEnsemble, choices: ChoiceEvent[], typeOverride?: ChoiceEvent['pairType']): DisplayPair {
-  let canonical: readonly [OKLCH, OKLCH]
   let type: ChoiceEvent['pairType'] = typeOverride ?? 'normal'
-  if (choices.length > 3 && choices.length % 11 === 10) {
-    const old = selectControlSource(choices)
-    canonical = [old.colorA, old.colorB]
-    type = 'repeated-control'
-  } else if (choices.length > 31 && choices.length % 13 === 12) {
-    const optimum = searchOptimum(ensemble, 360, choices.length + 901)
-    const competitor = gamutMap({ l: optimum.l + (choices.length % 2 ? 0.045 : -0.045), c: optimum.c + 0.025, h: optimum.h + 18 })
-    canonical = [{ l: optimum.l, c: optimum.c, h: optimum.h }, competitor]
-    type = 'local-challenge'
-  } else {
-    canonical = selectActivePair(ensemble, pool, choices.flatMap(choice => [choice.colorA, choice.colorB]), choices.length * 7919 + 17)
+  const canonical = ensureUsefulRenderedPair(attempt => {
+    if (attempt > 0) {
+      if (type === 'repeated-control' || type === 'local-challenge') type = 'normal'
+      return selectActivePair(ensemble, pool, choices.flatMap(choice => [choice.colorA, choice.colorB]), choices.length * 7919 + 17 + attempt * 104729)
+    }
+    if (choices.length > 3 && choices.length % 11 === 10) {
+      const old = selectControlSource(choices)
+      type = 'repeated-control'
+      return [old.colorA, old.colorB]
+    }
+    if (choices.length > 31 && choices.length % 13 === 12) {
+      const optimum = searchOptimum(ensemble, 360, choices.length + 901)
+      const competitor = gamutMap({ l: optimum.l + (choices.length % 2 ? 0.045 : -0.045), c: optimum.c + 0.025, h: optimum.h + 18 })
+      type = 'local-challenge'
+      return [{ l: optimum.l, c: optimum.c, h: optimum.h }, competitor]
+    }
     if (choices.length > 5 && choices.length % 7 === 6) type = 'validation'
-  }
+    return selectActivePair(ensemble, pool, choices.flatMap(choice => [choice.colorA, choice.colorB]), choices.length * 7919 + 17)
+  })
   const swap = crypto.getRandomValues(new Uint8Array(1))[0] % 2 === 0
   return { canonical, displayed: swap ? [canonical[1], canonical[0]] : canonical, leftColor: swap ? 'b' : 'a', type, startedAt: performance.now() }
 }
