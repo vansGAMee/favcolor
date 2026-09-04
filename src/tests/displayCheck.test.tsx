@@ -33,6 +33,17 @@ describe('first-run display check', () => {
     expect(screen.queryByRole('heading', { name: /display check|проверка экрана/i })).not.toBeInTheDocument()
   })
 
+  it('states the limitation and gives corrective feedback instead of claiming calibration', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    expect(await screen.findByText(/cannot make colors identical|не может сделать цвета одинаковыми/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /some merge together|часть сливается/i }))
+    expect(screen.getByText(/lower screen brightness|уменьшите яркость/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /continue|далее/i }))
+    await user.click(screen.getByRole('button', { name: /gray looks tinted|серый имеет оттенок/i }))
+    expect(screen.getByText(/disable night light|отключите ночной режим/i)).toBeInTheDocument()
+  })
+
   it('skip persists and existing choices bypass the check', async () => {
     const user = userEvent.setup()
     const first = render(<App />)

@@ -20,7 +20,7 @@ export function You({ model, language, sharing, onSharingChange, onRecheckDispla
     <div className="you-heading"><div><p className="eyebrow">{t('What the model has learned', 'Что узнала модель')}</p><h1>{t('Your color,', 'Ваш цвет')}<br />{t('made visible.', 'в деталях.')}</h1></div><p>{t('A living estimate built from your answers—not a personality quiz, and never uploaded.', 'Живой результат, основанный на ваших ответах. Это не тест личности, и данные никуда не отправляются.')}</p></div>
     <section className="profile-grid" style={{ '--estimate-color': estimateHex } as CSSProperties}>
       <article className="estimate-block">
-        <div className="estimate-topline"><span>{stable ? t('Reliable result', 'Надёжный результат') : t('Current guess', 'Текущая версия')}</span><span className="state-pill"><i />{stateLabel(model.modelState, language)}</span></div>
+        <div className="estimate-topline"><span>{stable ? t('Stable digital estimate', 'Стабильная цифровая оценка') : t('Current digital estimate', 'Текущая цифровая оценка')}</span><span className="state-pill"><i />{stateLabel(model.modelState, language)}</span></div>
         <div className="estimate-swatch" style={{ backgroundColor: colorCss(model.estimate) }}><span>{stable ? t('Your current color', 'Ваш текущий цвет') : t('Still learning', 'Ещё изучаем')}</span></div>
         <div className="estimate-details"><div><p className="eyebrow">{t('Current color', 'Текущий цвет')}</p><div className="estimate-hex">{estimateHex}</div></div><div className="oklch"><span>OKLCH</span><strong>{model.estimate.l.toFixed(3)}</strong><strong>{model.estimate.c.toFixed(3)}</strong><strong>{Math.round(model.estimate.h)}°</strong></div></div>
       </article>
@@ -51,6 +51,6 @@ export function You({ model, language, sharing, onSharingChange, onRecheckDispla
         <button className="danger" onClick={() => { if (window.confirm(t('Reset all answers, models, and history on this device?', 'Удалить все ответы, модель и историю на этом устройстве?'))) void model.reset() }}>{t('Reset local data', 'Удалить данные')}</button>
       </div>
     </section>
-    <p className="display-note">{t('Colors can look different on different screens. For fair comparison, use the same device and display settings.', 'На разных экранах цвета выглядят по-разному. Для точного сравнения используйте одно устройство и одинаковые настройки экрана.')}</p>
+    <p className="display-note">{t('HEX and OKLCH define the digital estimate. Its visible appearance depends on the screen, its color profile, brightness, and ambient light—no website can guarantee an identical physical color on every display.', 'HEX и OKLCH точно задают цифровую оценку. Видимый цвет зависит от экрана, его цветового профиля, яркости и освещения — сайт не может гарантировать одинаковый физический цвет на всех дисплеях.')}</p>
   </main>
 }
