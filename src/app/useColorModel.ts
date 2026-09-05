@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChoiceEvent, DailySnapshot, ModelState, OKLCH, TrainingExample, ValidationMetrics } from './types'
-import { colorToHex, gamutMap, oklabDistance } from '../color/color'
+import { colorToHex, oklabDistance } from '../color/color'
 import { ensureUsefulRenderedPair } from '../color/displayPair'
 import { generateCandidatePool } from '../ml/activeLearning/candidates'
 import { selectActivePair } from '../ml/activeLearning/select'
@@ -12,6 +12,7 @@ import { ColorDatabase } from '../storage/db'
 import { collectTrainingObservation } from '../data/trainingCollection'
 import { insertTrainingSession } from '../data/supabaseClient'
 import { selectControlSource } from '../ml/activeLearning/controlSchedule'
+import { localChallenge } from '../ml/activeLearning/localChallenge'
 
 type DisplayPair = { canonical: readonly [OKLCH, OKLCH]; displayed: readonly [OKLCH, OKLCH]; leftColor: 'a' | 'b'; type: ChoiceEvent['pairType']; startedAt: number }
 
@@ -47,9 +48,8 @@ function pairFor(ensemble: PreferenceEnsemble, choices: ChoiceEvent[], typeOverr
     }
     if (choices.length > 31 && choices.length % 13 === 12) {
       const optimum = searchOptimum(ensemble, 360, choices.length + 901)
-      const competitor = gamutMap({ l: optimum.l + (choices.length % 2 ? 0.045 : -0.045), c: optimum.c + 0.025, h: optimum.h + 18 })
       type = 'local-challenge'
-      return [{ l: optimum.l, c: optimum.c, h: optimum.h }, competitor]
+      return localChallenge({ l: optimum.l, c: optimum.c, h: optimum.h }, choices.length)
     }
     if (choices.length > 5 && choices.length % 7 === 6) type = 'validation'
     return selectActivePair(ensemble, pool, choices.flatMap(choice => [choice.colorA, choice.colorB]), choices.length * 7919 + 17)
