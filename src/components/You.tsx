@@ -6,6 +6,11 @@ import { EvolutionChart } from './EvolutionChart'
 import { TastePortrait } from './TastePortrait'
 import { stateLabel, translate, type Language } from '../app/i18n'
 import { shareColor } from '../sharing/colorShare'
+import { resultIsAvailable } from '../app/resultAvailability'
+import { trackEvent } from '../analytics/events'
+import { TeaSupportPrompt } from './TeaSupportPrompt'
+
+const TEA_URL = 'https://pay.cloudtips.ru/p/1c756a9c'
 
 const metric = (value: number | undefined, format = (x: number) => x.toFixed(3)) => value === undefined || !Number.isFinite(value) ? 'Not enough evidence yet' : format(value)
 
@@ -15,6 +20,7 @@ export function You({ model, language, sharing, onSharingChange, onRecheckDispla
   const enough = (model.metrics?.count ?? 0) >= 8
   const estimateHex = colorToHex(model.estimate)
   const stable = model.modelState === 'Ready'
+  const resultAvailable = resultIsAvailable(model.choices.length, model.estimate)
   const accuracy = enough && model.metrics?.accuracy !== undefined ? model.metrics.accuracy : null
   const loss = enough && model.metrics?.logLoss !== undefined ? model.metrics.logLoss : null
   const [shareStatus, setShareStatus] = useState('')
@@ -30,7 +36,8 @@ export function You({ model, language, sharing, onSharingChange, onRecheckDispla
       <article className="estimate-block">
         <div className="estimate-topline"><span>{stable ? t('Stable digital estimate', 'Стабильная цифровая оценка') : t('Current digital estimate', 'Текущая цифровая оценка')}</span><span className="state-pill"><i />{stateLabel(model.modelState, language)}</span></div>
         <div className="estimate-swatch" style={{ backgroundColor: colorCss(model.estimate) }}><span>{stable ? t('Your current color', 'Ваш текущий цвет') : t('Still learning', 'Ещё изучаем')}</span></div>
-        <div className="estimate-details"><div><p className="eyebrow">{t('Current color', 'Текущий цвет')}</p><div className="estimate-hex">{estimateHex}</div><button className="share-result" onClick={() => void shareResult()}>{t('Share', 'Поделиться')}</button><span className="share-status" role="status">{shareStatus}</span></div><div className="oklch"><span>OKLCH</span><strong>{model.estimate.l.toFixed(3)}</strong><strong>{model.estimate.c.toFixed(3)}</strong><strong>{Math.round(model.estimate.h)}°</strong></div></div>
+        {!stable && resultAvailable && <p className="current-result-note">{t('This is already your current result. New answers will refine the shade.', 'Это уже ваш текущий результат. Новые ответы будут уточнять оттенок.')}</p>}
+        <div className="estimate-details"><div><p className="eyebrow">{t('Current color', 'Текущий цвет')}</p><div className="estimate-hex">{estimateHex}</div><button className="share-result" onClick={() => void shareResult()}>{t('Share', 'Поделиться')}</button><span className="share-status" role="status">{shareStatus}</span>{resultAvailable && <p className="inline-tea">{t('If the result matches your taste, you can buy the author a tea.', 'Если результат попал в ваш вкус, можно угостить автора чаем.')} <a href={TEA_URL} target="_blank" rel="noreferrer" onClick={() => trackEvent('tea_inline_click')}>{t('Buy tea', 'На чай')}</a></p>}</div><div className="oklch"><span>OKLCH</span><strong>{model.estimate.l.toFixed(3)}</strong><strong>{model.estimate.c.toFixed(3)}</strong><strong>{Math.round(model.estimate.h)}°</strong></div></div>
       </article>
       <section className="learning-panel" aria-labelledby="learning-title">
         <div className="section-heading compact-heading"><div><p className="eyebrow">{t('Based on real answers', 'По реальным ответам')}</p><h2 id="learning-title">{t('How well it knows you', 'Насколько модель вас понимает')}</h2></div><span>{t('In order · On device', 'По порядку · На устройстве')}</span></div>
@@ -45,6 +52,7 @@ export function You({ model, language, sharing, onSharingChange, onRecheckDispla
         <div className="effects-row"><div><span>{t('Time-of-day pattern', 'Влияние времени суток')}</span><strong>{model.choices.length < 100 ? t('Not enough answers yet', 'Пока мало ответов') : model.contextActive ? t('Your taste changes with time', 'Вкус зависит от времени') : t('No clear effect found', 'Явного влияния нет')}</strong></div><div><span>{t('Preference change', 'Изменение вкуса')}</span><strong>{model.choices.length < 100 ? t('Not enough answers yet', 'Пока мало ответов') : model.driftActive ? t('Gradual change detected', 'Обнаружено постепенное изменение') : t('Preferences look stable', 'Предпочтения стабильны')}</strong></div><div><span>{t('Repeat consistency', 'Постоянство ответов')}</span><strong>{model.readiness.controlConsistency === null ? t('Not enough answers yet', 'Пока мало ответов') : `${(model.readiness.controlConsistency * 100).toFixed(0)}% · ${model.readiness.controlCount} ${t('checks', 'проверок')}`}</strong></div></div>
       </section>
     </section>
+    <TeaSupportPrompt choiceCount={model.choices.length} language={language} />
     <TastePortrait choices={model.choices} language={language} accent={estimateHex} />
     <section className="insights-grid"><HistoryGrid snapshots={model.snapshots} language={language} /><EvolutionChart snapshots={model.snapshots} language={language} /></section>
     <section className="data-panel">

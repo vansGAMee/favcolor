@@ -4,10 +4,16 @@ async function assertNoOverflow(page: import('@playwright/test').Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true)
 }
 
+async function finishDisplayCheck(page: import('@playwright/test').Page) {
+  const skip = page.getByRole('button', { name: 'Skip' })
+  if (await skip.isVisible()) await skip.click()
+}
+
 test('first choice persists, history is real, export and reset work', async ({ page }) => {
   const errors: string[] = []
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()) })
   await page.goto('/')
+  await finishDisplayCheck(page)
   const cards = page.getByRole('button', { name: /^Choose/ })
   await expect(cards).toHaveCount(2)
   await cards.first().click()
@@ -31,6 +37,7 @@ test('first choice persists, history is real, export and reset work', async ({ p
 test('mobile 390px keeps equal cards, keyboard flow, and no overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
+  await finishDisplayCheck(page)
   await assertNoOverflow(page)
   await page.screenshot({ path: 'test-results/mobile-discover.png', fullPage: true })
   const cards = page.getByRole('button', { name: /^Choose/ })
@@ -56,6 +63,7 @@ test('mobile 390px keeps equal cards, keyboard flow, and no overflow', async ({ 
 test('desktop analytics composition has no horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.goto('/')
+  await finishDisplayCheck(page)
   await assertNoOverflow(page)
   await page.screenshot({ path: 'test-results/desktop-discover.png', fullPage: true })
   await page.getByRole('tab', { name: 'Discover' }).focus()
@@ -65,4 +73,27 @@ test('desktop analytics composition has no horizontal overflow', async ({ page }
   await assertNoOverflow(page)
   await page.waitForTimeout(700)
   await page.screenshot({ path: 'test-results/desktop-you.png', fullPage: true })
+})
+
+test('available-result notice stays in flow on mobile and desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await finishDisplayCheck(page)
+  for (let count = 1; count <= 32; count++) {
+    await page.locator('.color-card').first().click()
+    await expect(page.locator('.choice-count strong')).toHaveText(String(count))
+  }
+  const notice = page.getByRole('status', { name: 'Your color is ready to view' })
+  await expect(notice).toBeVisible()
+  const noticeBox = await notice.boundingBox()
+  const cardsBox = await page.locator('.comparison').boundingBox()
+  expect((noticeBox?.x ?? -1) >= 0 && (noticeBox?.x ?? 0) + (noticeBox?.width ?? 0) <= 390).toBe(true)
+  expect((noticeBox?.y ?? 0) + (noticeBox?.height ?? 0) <= (cardsBox?.y ?? 0)).toBe(true)
+  await assertNoOverflow(page)
+  await page.screenshot({ path: 'test-results/mobile-result-available.png', fullPage: true })
+
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await expect(notice).toBeVisible()
+  await assertNoOverflow(page)
+  await page.screenshot({ path: 'test-results/desktop-result-available.png', fullPage: true })
 })

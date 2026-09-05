@@ -58,30 +58,53 @@ describe('tea support prompt', () => {
     modelState.choiceCount = 250
   })
 
-  it('appears on My color at 250 choices and stays dismissed for the session', async () => {
+  it.each([250, 251, 300])('appears on My color at %i choices', async choiceCount => {
+    const user = userEvent.setup()
+    modelState.choiceCount = choiceCount
+    render(<App />)
+    await user.click(screen.getByRole('tab', { name: 'Мой цвет' }))
+    expect(screen.getByText(/250 сравнений.*угостить автора чаем/i)).toBeInTheDocument()
+  })
+
+  it('does not appear before 250 choices', async () => {
     const user = userEvent.setup()
     modelState.choiceCount = 249
+    render(<App />)
+    await user.click(screen.getByRole('tab', { name: 'Мой цвет' }))
+    expect(screen.queryByText(/250 сравнений/i)).not.toBeInTheDocument()
+  })
+
+  it('does not repeat after its first actual display in the browser session', async () => {
+    const user = userEvent.setup()
     const view = render(<App />)
     await user.click(screen.getByRole('tab', { name: 'Мой цвет' }))
-    expect(screen.queryByText(/угостить проект чаем/i)).not.toBeInTheDocument()
-
-    modelState.choiceCount = 250
-    view.rerender(<App />)
-    expect(screen.getByText(/угостить проект чаем/i)).toBeInTheDocument()
-    await user.click(within(screen.getByRole('complementary', { name: 'Поддержать Favcolor' })).getByRole('button', { name: 'Не сейчас' }))
-    expect(screen.queryByText(/угостить проект чаем/i)).not.toBeInTheDocument()
-
+    expect(screen.getByText(/250 сравнений/i)).toBeInTheDocument()
     view.unmount()
     render(<App />)
     await user.click(screen.getByRole('tab', { name: 'Мой цвет' }))
-    expect(screen.queryByText(/угостить проект чаем/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/250 сравнений/i)).not.toBeInTheDocument()
+  })
+
+  it.each([
+    ['Не сейчас', 'button'],
+    ['На чай', 'link'],
+  ] as const)('stays dismissed after choosing %s', async (name, role) => {
+    const user = userEvent.setup()
+    const view = render(<App />)
+    await user.click(screen.getByRole('tab', { name: 'Мой цвет' }))
+    const prompt = screen.getByRole('complementary', { name: 'Поддержать Favcolor' })
+    await user.click(within(prompt).getByRole(role, { name }))
+    view.unmount()
+    render(<App />)
+    await user.click(screen.getByRole('tab', { name: 'Мой цвет' }))
+    expect(screen.queryByText(/250 сравнений/i)).not.toBeInTheDocument()
   })
 
   it('uses the verified CloudTips link without exposing the current page', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(screen.getByRole('tab', { name: 'Мой цвет' }))
-    const link = screen.getByRole('link', { name: 'На чай' })
+    const link = within(screen.getByRole('complementary', { name: 'Поддержать Favcolor' })).getByRole('link', { name: 'На чай' })
     expect(link).toHaveAttribute('href', 'https://pay.cloudtips.ru/p/1c756a9c')
     expect(link).toHaveAttribute('target', '_blank')
     expect(link).toHaveAttribute('rel', 'noreferrer')

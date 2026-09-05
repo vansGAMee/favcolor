@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { translate, type Language } from '../app/i18n'
+import { trackEvent } from '../analytics/events'
 
 const TEA_PROMPT_SEEN_KEY = 'favcolor-tea-prompt-seen-v1'
 const TEA_URL = 'https://pay.cloudtips.ru/p/1c756a9c'
@@ -16,12 +17,20 @@ const rememberPrompt = () => {
 
 export function TeaSupportPrompt({ choiceCount, language }: { choiceCount: number; language: Language }) {
   const [dismissed, setDismissed] = useState(promptWasSeen)
+  const viewTracked = useRef(false)
   const eligible = choiceCount >= 250 && !dismissed
   const t = (english: string, russian: string) => translate(language, english, russian)
 
   useEffect(() => {
-    if (eligible) rememberPrompt()
+    if (eligible) {
+      rememberPrompt()
+      if (!viewTracked.current) { viewTracked.current = true; trackEvent('tea_prompt_view') }
+    }
   }, [eligible])
+
+  const dismiss = () => {
+    setDismissed(true)
+  }
 
   if (!eligible) return null
 
@@ -29,11 +38,11 @@ export function TeaSupportPrompt({ choiceCount, language }: { choiceCount: numbe
     <span className="tea-prompt-icon" aria-hidden="true">☕</span>
     <div className="tea-prompt-copy">
       <strong>{t('A small thank you', 'Небольшое спасибо')}</strong>
-      <p>{t('If Favcolor was useful, you can buy the project a tea.', 'Если Favcolor оказался полезным, можно угостить проект чаем.')}</p>
+      <p>{t('250 comparisons. If the result felt close to your taste, you can buy the author a tea.', '250 сравнений. Если результат оказался близок к вашему вкусу, можно угостить автора чаем.')}</p>
     </div>
     <div className="tea-prompt-actions">
-      <a href={TEA_URL} target="_blank" rel="noreferrer" onClick={() => setDismissed(true)}>{t('Buy tea', 'На чай')}</a>
-      <button type="button" onClick={() => setDismissed(true)}>{t('Not now', 'Не сейчас')}</button>
+      <a href={TEA_URL} target="_blank" rel="noreferrer" onClick={() => { trackEvent('tea_prompt_click'); dismiss() }}>{t('Buy tea', 'На чай')}</a>
+      <button type="button" onClick={dismiss}>{t('Not now', 'Не сейчас')}</button>
     </div>
   </aside>
 }

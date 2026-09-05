@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useColorModel } from './app/useColorModel'
 import { translate, type Language } from './app/i18n'
 import { Discover } from './components/Discover'
@@ -6,9 +6,10 @@ import { You } from './components/You'
 import { TrainingPrompt } from './components/TrainingPrompt'
 import { DisplayCheck, DISPLAY_CHECK_KEY } from './components/DisplayCheck'
 import { SharedColor } from './components/SharedColor'
-import { TeaSupportPrompt } from './components/TeaSupportPrompt'
 import { setTrainingSharing, trainingSharingEnabled } from './data/trainingCollection'
 import { parseSharedColor } from './sharing/colorShare'
+import { resultIsAvailable } from './app/resultAvailability'
+import { trackEvent } from './analytics/events'
 import './styles.css'
 
 const READY_NOTICE_KEY = 'favcolor-ready-result-seen-v1'
@@ -29,6 +30,7 @@ export function App() {
   const [recheckingDisplay, setRecheckingDisplay] = useState(false)
   const [displayCheckComplete, setDisplayCheckComplete] = useState(() => localStorage.getItem(DISPLAY_CHECK_KEY) === 'complete')
   const [readyNoticeSeen, setReadyNoticeSeen] = useState(() => localStorage.getItem(READY_NOTICE_KEY) === 'seen')
+  const availabilityViewTracked = useRef(false)
   const sharedHex = parseSharedColor(window.location.search)
   const t = (english: string, russian: string) => translate(language, english, russian)
   useEffect(() => {
@@ -48,8 +50,28 @@ export function App() {
   const enableSharing = () => { setTrainingSharing(true); setSharingEnabled(true) }
   const updateSharing = (enabled: boolean) => { setTrainingSharing(enabled); setSharingEnabled(enabled) }
   const finishDisplayCheck = () => { localStorage.setItem(DISPLAY_CHECK_KEY, 'complete'); setDisplayCheckComplete(true); setRecheckingDisplay(false) }
+  const resultAvailable = resultIsAvailable(model.choices.length, model.estimate)
+  const unseenResult = resultAvailable && !readyNoticeSeen
+  const showAvailableResult = unseenResult && tab === 'discover'
+  useEffect(() => {
+    if (!model.hydrated) return
+    if (model.choices.length === 0) {
+      localStorage.removeItem(READY_NOTICE_KEY)
+      setReadyNoticeSeen(false)
+      availabilityViewTracked.current = false
+    }
+  }, [model.hydrated, model.choices.length])
+  useEffect(() => {
+    if (!showAvailableResult || availabilityViewTracked.current) return
+    availabilityViewTracked.current = true
+    trackEvent('result_available_view')
+  }, [showAvailableResult])
   const openResult = () => {
-    if (model.modelState === 'Ready') { localStorage.setItem(READY_NOTICE_KEY, 'seen'); setReadyNoticeSeen(true) }
+    if (resultAvailable && !readyNoticeSeen) {
+      localStorage.setItem(READY_NOTICE_KEY, 'seen')
+      setReadyNoticeSeen(true)
+      trackEvent('result_available_open')
+    }
     selectTab('you')
   }
   if (sharedHex) return <SharedColor hex={sharedHex} language={language} />
@@ -62,14 +84,13 @@ export function App() {
       <button className="wordmark" onClick={() => selectTab('discover')} aria-label="Your Color home"><span className="mark" /><span>Favcolor</span><small>Personal lab</small></button>
       <nav className={`tabs show-${tab}`} role="tablist" aria-label={t('Main navigation', 'Основная навигация')}>
         <button id="discover-tab" role="tab" aria-controls="discover-panel" aria-selected={tab === 'discover'} tabIndex={tab === 'discover' ? 0 : -1} onKeyDown={event => { if (event.key === 'ArrowRight') { event.preventDefault(); selectTab('you'); requestAnimationFrame(() => document.getElementById('you-tab')?.focus()) } }} onClick={() => selectTab('discover')}>{t('Discover', 'Выбор')}</button>
-        <button id="you-tab" role="tab" aria-controls="you-panel" aria-selected={tab === 'you'} tabIndex={tab === 'you' ? 0 : -1} onKeyDown={event => { if (event.key === 'ArrowLeft') { event.preventDefault(); selectTab('discover'); requestAnimationFrame(() => document.getElementById('discover-tab')?.focus()) } else if (event.key === 'ArrowRight') { event.preventDefault(); selectTab('method'); requestAnimationFrame(() => document.getElementById('method-tab')?.focus()) } }} onClick={openResult}>{t('You', 'Мой цвет')}</button>
+        <button id="you-tab" className={unseenResult ? 'has-unseen-result' : undefined} role="tab" aria-controls="you-panel" aria-selected={tab === 'you'} tabIndex={tab === 'you' ? 0 : -1} onKeyDown={event => { if (event.key === 'ArrowLeft') { event.preventDefault(); selectTab('discover'); requestAnimationFrame(() => document.getElementById('discover-tab')?.focus()) } else if (event.key === 'ArrowRight') { event.preventDefault(); selectTab('method'); requestAnimationFrame(() => document.getElementById('method-tab')?.focus()) } }} onClick={openResult}>{t('You', 'Мой цвет')}{unseenResult && <i className="result-tab-dot" aria-hidden="true" />}</button>
         <button id="method-tab" role="tab" aria-controls="method-panel" aria-selected={tab === 'method'} tabIndex={tab === 'method' ? 0 : -1} onKeyDown={event => { if (event.key === 'ArrowLeft') { event.preventDefault(); selectTab('you'); requestAnimationFrame(() => document.getElementById('you-tab')?.focus()) } }} onClick={() => selectTab('method')}>{t('How it works', 'Как работает')}</button>
       </nav>
       <div className="header-tools"><span className="local-badge"><i />{t('Private · On device', 'Приватно · На устройстве')}</span><button className="language-toggle" onClick={() => setLanguage(language === 'en' ? 'ru' : 'en')} aria-label={t('Switch to Russian', 'Переключить на английский')}>{language === 'en' ? 'RU' : 'EN'}</button></div>
     </header>
     {model.error && <div className="error-banner" role="alert">{model.error}</div>}
     <TrainingPrompt choiceCount={model.choices.length} sharingEnabled={sharingEnabled} onHelp={enableSharing} />
-    <div className="tab-stage" id="main-content" key={tab}>{tab === 'discover' ? <Discover model={model} language={language} showReadyResult={model.modelState === 'Ready' && !readyNoticeSeen} onOpenResult={openResult} /> : tab === 'you' ? <You model={model} language={language} sharing={sharingEnabled} onSharingChange={updateSharing} onRecheckDisplay={() => setRecheckingDisplay(true)} /> : <Suspense fallback={<main className="method-page method-loading" id="method-panel" role="tabpanel" aria-labelledby="method-tab"><span>{t('Loading the research…', 'Загружаем исследование…')}</span></main>}><Method language={language} /></Suspense>}</div>
-    {tab === 'you' && <TeaSupportPrompt choiceCount={model.choices.length} language={language} />}
+    <div className="tab-stage" id="main-content" key={tab}>{tab === 'discover' ? <Discover model={model} language={language} showReadyResult={showAvailableResult} onOpenResult={openResult} /> : tab === 'you' ? <You model={model} language={language} sharing={sharingEnabled} onSharingChange={updateSharing} onRecheckDisplay={() => setRecheckingDisplay(true)} /> : <Suspense fallback={<main className="method-page method-loading" id="method-panel" role="tabpanel" aria-labelledby="method-tab"><span>{t('Loading the research…', 'Загружаем исследование…')}</span></main>}><Method language={language} /></Suspense>}</div>
   </div>
 }

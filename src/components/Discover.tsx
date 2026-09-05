@@ -25,6 +25,7 @@ export function Discover({ model, language, showReadyResult = false, onOpenResul
       <div><p className="eyebrow">{t('Your personal color', 'Ваш личный цвет')}</p><h1>{t('Which color feels', 'Какой цвет вам')}<br />{t('more like you?', 'ближе?')}</h1></div>
       <div className="study-status"><span className="status-kicker"><i />{stage}</span><span className="choice-count" key={committedChoiceCount}><strong>{committedChoiceCount}</strong> {answerLabel}</span></div>
     </section>
+    {showReadyResult && <ResultReadyNotice color={model.estimate} language={language} onOpen={onOpenResult} />}
     <section className="comparison" aria-label={t('Choose the color you prefer', 'Выберите цвет, который нравится больше')}>
       {model.pair.displayed.map((color, index) => {
         const revealed = revealedCodes?.pair === model.pair && revealedCodes.indexes.includes(index)
@@ -59,6 +60,5 @@ export function Discover({ model, language, showReadyResult = false, onOpenResul
       <span className="versus" aria-hidden="true">{t('or', 'или')}</span>
     </section>
     <footer className="choice-footer"><span className="notice-change" key={notice}>{notice}</span><span>{blind ? t('Consistency check', 'Проверка постоянства') : t('Trust your first reaction', 'Доверьтесь первой реакции')}</span></footer>
-    {showReadyResult && <ResultReadyNotice color={model.estimate} language={language} onOpen={onOpenResult} />}
   </main>
 }
