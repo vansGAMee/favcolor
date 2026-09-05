@@ -13,6 +13,7 @@ export function EvolutionChart({ snapshots, language }: { snapshots: DailySnapsh
 
   return <section className="evolution-panel" aria-labelledby="evolution-title">
     <div className="section-heading compact-heading"><div><p className="eyebrow">{t('How your color moves', 'Как меняется ваш цвет')}</p><h2 id="evolution-title">{t('Color evolution', 'Изменение цвета')}</h2></div><span>{points.length ? `${points.length} ${t('recorded days', 'дней')}` : t('Waiting for history', 'Ждём историю')}</span></div>
+    <p className="evolution-explainer">{t('Each point continues the diary above: saved daily colors become a path of change.', 'Каждая точка продолжает дневник: сохранённые цвета складываются в путь изменений.')}</p>
     {points.length >= 2 ? <>
       <div className="trajectory-wrap">
         <svg className="trajectory" viewBox="0 0 320 280" role="img" aria-label={`${t('Color movement across', 'Изменение цвета за')} ${points.length} ${t('recorded days', 'дней')}`}>
