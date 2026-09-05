@@ -171,6 +171,10 @@ export function Method({ language }: { language: Language }) {
         <div className="method-model-name"><span>{t('Model name', 'Имя модели')}</span><strong>Nikolai Dubovskoy</strong><small>{t('a tribute, not a scientific designation', 'дань уважения, не научное обозначение')}</small></div>
         <button className="method-signal-button" type="button" onClick={playSignal}>{t('Send one choice through the network', 'Пропустить один выбор через сеть')}<span aria-hidden="true">→</span></button>
       </div>
+      <figure className="method-hero-visual method-reveal">
+        <img src="/method/color-space-journey.png" alt={t('A color-space map with a learning path moving toward the model estimate', 'Карта цветового пространства с траекторией обучения к оценке модели')} width="1824" height="864" fetchPriority="high" />
+        <figcaption><span>OKLCH / {t('search space', 'пространство поиска')}</span><p>{t('The path is illustrative; the measurements below are the actual benchmark results.', 'Траектория условная; измерения ниже — реальные результаты тестов.')}</p></figcaption>
+      </figure>
     </section>
 
     <section className="method-process method-reveal" id="method-process">
@@ -213,6 +217,11 @@ export function Method({ language }: { language: Language }) {
     <section className="method-history method-reveal" id="method-history">
       <header><h2 aria-label={t('Development history', 'История разработки')}>{t('Built by correcting itself.', 'Сделано через исправление ошибок.')}</h2></header>
       <div className="method-history-list">{history.map(([date, title, body], index) => <article className="method-history-item" key={`${date}-${title}`}><time dateTime={`2026-09-${date.slice(0, 2)}`}>{date}.2026</time><span>{String(index + 1).padStart(2, '0')}</span><div><h3>{title}</h3><p>{body}</p></div></article>)}</div>
+    </section>
+
+    <section className="method-display-visual method-reveal">
+      <img src="/method/display-pixels.png" alt={t('Macro view of RGB display pixels blending into a continuous color', 'Макросъёмка RGB-пикселей экрана, переходящих в непрерывный цвет')} width="1536" height="1024" loading="lazy" />
+      <div><p className="eyebrow">{t('Displayed, not imagined', 'Показано, а не придумано')}</p><h2>{t('The screen is part of the experiment.', 'Экран — часть эксперимента.')}</h2><p>{t('The model works in a perceptual color space, but every comparison is validated after conversion to the pixels your display can actually render.', 'Модель работает в перцептивном цветовом пространстве, но каждая пара проверяется после преобразования в пиксели, которые действительно может показать экран.')}</p></div>
     </section>
 
     <section className="method-boundary method-reveal" id="method-boundary"><div className="method-boundary-main"><h2>{t('A useful estimate. Not an absolute truth.', 'Полезная оценка. Не абсолютная истина.')}</h2><p>{t('“Your color” is the model’s current best estimate under this pairwise procedure. It is not a diagnosis, a personality type, or proof of one permanent favorite.', '«Ваш цвет» - текущая лучшая оценка модели в рамках парных сравнений. Это не диагноз, не тип личности и не доказательство одного вечного любимого цвета.')}</p><a href="/">{t('Try it with your own choices', 'Проверить на своих выборах')}<span aria-hidden="true">→</span></a></div><div className="method-boundary-notes"><p>{t('Screens, brightness, color profiles, ambient light, and fatigue can change appearance and choice.', 'Экран, яркость, цветовой профиль, освещение и усталость могут менять вид цвета и выбор.')}</p><p>{t('The production model is a real neural network trained only from your choices. Benchmarks test software recovery, not people.', 'Production-модель - настоящая нейросеть, которая учится только на ваших выборах. Benchmark проверяют программу, а не людей.')}</p><p>{t('Your model and history stay in this browser. Anonymous research sharing remains strictly opt-in.', 'Модель и история остаются в браузере. Анонимная отправка данных для исследований включается только добровольно.')}</p></div></section>
