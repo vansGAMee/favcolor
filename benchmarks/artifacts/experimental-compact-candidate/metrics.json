@@ -1,0 +1,848 @@
+{
+  "generatedAt": "2026-09-05T07:04:20.883Z",
+  "source": "training_sessions_rows (1).csv",
+  "config": {
+    "schemaVersion": 1,
+    "seed": 20260905,
+    "folds": 5,
+    "epochs": 18,
+    "ensembleSize": 5,
+    "architecture": [
+      6,
+      12,
+      8,
+      1
+    ],
+    "learningRate": 0.0025,
+    "inputFeatures": [
+      "lightness",
+      "chroma",
+      "chroma-conditioned sin(h)",
+      "chroma-conditioned cos(h)",
+      "chroma-conditioned sin(2h)",
+      "chroma-conditioned cos(2h)"
+    ],
+    "usesRecordedPredictionAsFeature": false,
+    "excludedPairTypes": [
+      "repeated-control"
+    ],
+    "evaluation": "packet-grouped frozen held-out predictions"
+  },
+  "data": {
+    "packets": 23,
+    "uploadedObservations": 1092,
+    "usableObservations": 994,
+    "excludedRepeatedControls": 97,
+    "excludedCollapsedRenderedPairs": 1,
+    "pairTypes": {
+      "normal": 806,
+      "local-challenge": 64,
+      "validation": 124
+    }
+  },
+  "evaluation": {
+    "candidate": {
+      "count": 994,
+      "balancedAccuracy": 0.547289863658027,
+      "rocAuc": 0.5646054278447634,
+      "logLoss": 0.6818401612755958,
+      "accuracy": 0.5724346076458753,
+      "positiveRate": 0.6509054325955734
+    },
+    "productionArchitecture": {
+      "count": 994,
+      "balancedAccuracy": 0.5627458141989853,
+      "rocAuc": 0.6019402340217986,
+      "logLoss": 0.6632906425803509,
+      "accuracy": 0.5925553319919518,
+      "positiveRate": 0.6509054325955734
+    },
+    "recordedProductionPrequential": {
+      "count": 994,
+      "balancedAccuracy": 0.5832104726313867,
+      "rocAuc": 0.6994129411293089,
+      "logLoss": 0.5957452006979889,
+      "accuracy": 0.6800804828973843,
+      "positiveRate": 0.6509054325955734
+    },
+    "random": {
+      "count": 994,
+      "balancedAccuracy": 0.5,
+      "rocAuc": 0.5,
+      "logLoss": 0.6931471805599324,
+      "accuracy": 0.5,
+      "positiveRate": 0.6509054325955734
+    },
+    "alwaysA": {
+      "count": 994,
+      "balancedAccuracy": 0.5,
+      "rocAuc": 0.5,
+      "logLoss": 6.430559580359963,
+      "accuracy": 0.6509054325955734,
+      "positiveRate": 0.6509054325955734
+    },
+    "foldVariance": {
+      "candidateLogLoss": 0.0009762580514140072,
+      "productionArchitectureLogLoss": 0.0006253802414414369
+    },
+    "folds": [
+      {
+        "fold": 0,
+        "heldOutPackets": [
+          "2cc5299f-c067-4685-9e51-c490d0ce5a59",
+          "94af35e4-cd59-4a07-aa6c-9a59945f9226",
+          "3bc6a8d9-2e0b-4f3e-9ae6-c7d2297d4ac9",
+          "920f5f48-f5b6-4ef8-b55b-5b2547c112b0",
+          "1e8edff2-12f6-4943-a4a4-98ef4db34ce2"
+        ],
+        "candidate": {
+          "count": 256,
+          "balancedAccuracy": 0.5426892275897701,
+          "rocAuc": 0.5870253164556962,
+          "logLoss": 0.6795024852019069,
+          "accuracy": 0.57421875,
+          "positiveRate": 0.6171875
+        },
+        "productionArchitecture": {
+          "count": 256,
+          "balancedAccuracy": 0.5446267114440713,
+          "rocAuc": 0.5905773701885818,
+          "logLoss": 0.6786770517322408,
+          "accuracy": 0.57421875,
+          "positiveRate": 0.6171875
+        }
+      },
+      {
+        "fold": 1,
+        "heldOutPackets": [
+          "04fa90c9-f64e-4a05-becf-e0de9089b31a",
+          "d68bdfd7-7a5d-45bb-828e-f493216ee301",
+          "8c24cbab-0022-466d-b2a5-a03c1b9f3016",
+          "5ebd1ad5-3698-45bc-b1ad-03ade4326a58",
+          "6d839a41-4521-496e-8c96-760602694176"
+        ],
+        "candidate": {
+          "count": 200,
+          "balancedAccuracy": 0.6400686400686401,
+          "rocAuc": 0.6993243243243243,
+          "logLoss": 0.6250725307465723,
+          "accuracy": 0.68,
+          "positiveRate": 0.63
+        },
+        "productionArchitecture": {
+          "count": 200,
+          "balancedAccuracy": 0.6118618618618619,
+          "rocAuc": 0.7007185757185758,
+          "logLoss": 0.6165042584020851,
+          "accuracy": 0.655,
+          "positiveRate": 0.63
+        }
+      },
+      {
+        "fold": 2,
+        "heldOutPackets": [
+          "a1512916-4546-4110-a930-3dc1d002f857",
+          "bb683a43-faac-4130-a7d8-56071a095e9d",
+          "9a75e4d0-c0dc-4b24-9f03-d9217846dcef",
+          "70dccf97-b9f3-49df-a440-ac6ea134af1d",
+          "b7c2a32c-f539-4403-93df-3ab9bfd8928f"
+        ],
+        "candidate": {
+          "count": 218,
+          "balancedAccuracy": 0.5423972405863754,
+          "rocAuc": 0.5213662929960716,
+          "logLoss": 0.7100861501817588,
+          "accuracy": 0.5596330275229358,
+          "positiveRate": 0.6743119266055045
+        },
+        "productionArchitecture": {
+          "count": 218,
+          "balancedAccuracy": 0.5688895276420427,
+          "rocAuc": 0.5881479352304302,
+          "logLoss": 0.6622780239069603,
+          "accuracy": 0.6100917431192661,
+          "positiveRate": 0.6743119266055045
+        }
+      },
+      {
+        "fold": 3,
+        "heldOutPackets": [
+          "6d354730-1a4d-47b9-b73d-ab0da03f5bea",
+          "a93f8a43-327c-4746-94e4-5499b7d8d51a",
+          "46cc4f93-286b-45a7-807c-e06e06a03751",
+          "436d5606-a999-4c52-9dad-3c3f6d47eeb2"
+        ],
+        "candidate": {
+          "count": 160,
+          "balancedAccuracy": 0.49178743961352656,
+          "rocAuc": 0.4915942028985507,
+          "logLoss": 0.7100818610471412,
+          "accuracy": 0.5125,
+          "positiveRate": 0.71875
+        },
+        "productionArchitecture": {
+          "count": 160,
+          "balancedAccuracy": 0.5449275362318841,
+          "rocAuc": 0.5547826086956522,
+          "logLoss": 0.6872645369502461,
+          "accuracy": 0.55,
+          "positiveRate": 0.71875
+        }
+      },
+      {
+        "fold": 4,
+        "heldOutPackets": [
+          "17174f92-48be-4ad5-921a-ed212fc61516",
+          "95901655-fecf-42be-b3f9-109bb3007b17",
+          "4951e7e9-5be0-43f7-9b52-23a0f98e391e",
+          "d2e31290-d853-4a45-a989-873e9b7cb235"
+        ],
+        "candidate": {
+          "count": 160,
+          "balancedAccuracy": 0.5116630307098506,
+          "rocAuc": 0.5471555630139285,
+          "logLoss": 0.6898131214985834,
+          "accuracy": 0.5125,
+          "positiveRate": 0.63125
+        },
+        "productionArchitecture": {
+          "count": 160,
+          "balancedAccuracy": 0.5547910723275717,
+          "rocAuc": 0.6000167813391508,
+          "logLoss": 0.674561166732761,
+          "accuracy": 0.5625,
+          "positiveRate": 0.63125
+        }
+      }
+    ],
+    "perPacket": [
+      {
+        "packetId": "04fa90c9-f64e-4a05-becf-e0de9089b31a",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.7252747252747254,
+          "rocAuc": 0.7637362637362637,
+          "logLoss": 0.5980614553449699,
+          "accuracy": 0.75,
+          "positiveRate": 0.65
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.7445054945054945,
+          "rocAuc": 0.7582417582417582,
+          "logLoss": 0.5936702947851624,
+          "accuracy": 0.775,
+          "positiveRate": 0.65
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.4807692307692308,
+          "rocAuc": 0.4807692307692308,
+          "logLoss": 0.6964037975502233,
+          "accuracy": 0.625,
+          "positiveRate": 0.65
+        }
+      },
+      {
+        "packetId": "17174f92-48be-4ad5-921a-ed212fc61516",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.45833333333333337,
+          "rocAuc": 0.5598958333333334,
+          "logLoss": 0.6821471084208984,
+          "accuracy": 0.45,
+          "positiveRate": 0.6
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.45833333333333337,
+          "rocAuc": 0.5494791666666666,
+          "logLoss": 0.681115547740795,
+          "accuracy": 0.45,
+          "positiveRate": 0.6
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.6979166666666667,
+          "rocAuc": 0.7916666666666666,
+          "logLoss": 0.6352342143028797,
+          "accuracy": 0.75,
+          "positiveRate": 0.6
+        }
+      },
+      {
+        "packetId": "1e8edff2-12f6-4943-a4a4-98ef4db34ce2",
+        "candidate": {
+          "count": 59,
+          "balancedAccuracy": 0.5792151162790697,
+          "rocAuc": 0.5872093023255814,
+          "logLoss": 0.6507328755640641,
+          "accuracy": 0.6440677966101694,
+          "positiveRate": 0.7288135593220338
+        },
+        "productionArchitecture": {
+          "count": 59,
+          "balancedAccuracy": 0.5675872093023255,
+          "rocAuc": 0.5886627906976745,
+          "logLoss": 0.6527644145309238,
+          "accuracy": 0.6271186440677966,
+          "positiveRate": 0.7288135593220338
+        },
+        "recordedProduction": {
+          "count": 59,
+          "balancedAccuracy": 0.4883720930232558,
+          "rocAuc": 0.5203488372093024,
+          "logLoss": 0.626369321662329,
+          "accuracy": 0.711864406779661,
+          "positiveRate": 0.7288135593220338
+        }
+      },
+      {
+        "packetId": "2cc5299f-c067-4685-9e51-c490d0ce5a59",
+        "candidate": {
+          "count": 58,
+          "balancedAccuracy": 0.5240384615384616,
+          "rocAuc": 0.5817307692307693,
+          "logLoss": 0.6975525855771754,
+          "accuracy": 0.5344827586206896,
+          "positiveRate": 0.5517241379310345
+        },
+        "productionArchitecture": {
+          "count": 58,
+          "balancedAccuracy": 0.5276442307692308,
+          "rocAuc": 0.5829326923076923,
+          "logLoss": 0.6927814181079749,
+          "accuracy": 0.5344827586206896,
+          "positiveRate": 0.5517241379310345
+        },
+        "recordedProduction": {
+          "count": 58,
+          "balancedAccuracy": 0.6069711538461539,
+          "rocAuc": 0.6598557692307693,
+          "logLoss": 0.7043920527957475,
+          "accuracy": 0.6379310344827587,
+          "positiveRate": 0.5517241379310345
+        }
+      },
+      {
+        "packetId": "3bc6a8d9-2e0b-4f3e-9ae6-c7d2297d4ac9",
+        "candidate": {
+          "count": 59,
+          "balancedAccuracy": 0.3952941176470588,
+          "rocAuc": 0.4023529411764706,
+          "logLoss": 0.8233752849481186,
+          "accuracy": 0.4067796610169492,
+          "positiveRate": 0.576271186440678
+        },
+        "productionArchitecture": {
+          "count": 59,
+          "balancedAccuracy": 0.4394117647058824,
+          "rocAuc": 0.4235294117647059,
+          "logLoss": 0.8195673065781396,
+          "accuracy": 0.4576271186440678,
+          "positiveRate": 0.576271186440678
+        },
+        "recordedProduction": {
+          "count": 59,
+          "balancedAccuracy": 0.5158823529411765,
+          "rocAuc": 0.5623529411764706,
+          "logLoss": 0.6694812818123007,
+          "accuracy": 0.576271186440678,
+          "positiveRate": 0.576271186440678
+        }
+      },
+      {
+        "packetId": "436d5606-a999-4c52-9dad-3c3f6d47eeb2",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.5284900284900285,
+          "rocAuc": 0.5783475783475783,
+          "logLoss": 0.6977898235164366,
+          "accuracy": 0.525,
+          "positiveRate": 0.675
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.6225071225071226,
+          "rocAuc": 0.6837606837606838,
+          "logLoss": 0.6520051184422252,
+          "accuracy": 0.625,
+          "positiveRate": 0.675
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.6581196581196581,
+          "rocAuc": 0.8632478632478633,
+          "logLoss": 0.48526330841016263,
+          "accuracy": 0.7,
+          "positiveRate": 0.675
+        }
+      },
+      {
+        "packetId": "46cc4f93-286b-45a7-807c-e06e06a03751",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.5833333333333334,
+          "rocAuc": 0.5863095238095238,
+          "logLoss": 0.6329220095992787,
+          "accuracy": 0.65,
+          "positiveRate": 0.7
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.6726190476190477,
+          "rocAuc": 0.6636904761904762,
+          "logLoss": 0.6106037434138458,
+          "accuracy": 0.675,
+          "positiveRate": 0.7
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.6369047619047619,
+          "rocAuc": 0.8214285714285714,
+          "logLoss": 0.4991072670969941,
+          "accuracy": 0.725,
+          "positiveRate": 0.7
+        }
+      },
+      {
+        "packetId": "4951e7e9-5be0-43f7-9b52-23a0f98e391e",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.44505494505494503,
+          "rocAuc": 0.45054945054945056,
+          "logLoss": 0.7355295199947729,
+          "accuracy": 0.45,
+          "positiveRate": 0.65
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.4807692307692308,
+          "rocAuc": 0.5027472527472527,
+          "logLoss": 0.7505004805760308,
+          "accuracy": 0.475,
+          "positiveRate": 0.65
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.6373626373626373,
+          "rocAuc": 0.7967032967032966,
+          "logLoss": 0.5286613995190526,
+          "accuracy": 0.7,
+          "positiveRate": 0.65
+        }
+      },
+      {
+        "packetId": "5ebd1ad5-3698-45bc-b1ad-03ade4326a58",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.7350427350427351,
+          "rocAuc": 0.7806267806267806,
+          "logLoss": 0.5952688533765141,
+          "accuracy": 0.75,
+          "positiveRate": 0.675
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.6424501424501424,
+          "rocAuc": 0.7435897435897436,
+          "logLoss": 0.600878969854885,
+          "accuracy": 0.625,
+          "positiveRate": 0.675
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.7150997150997151,
+          "rocAuc": 0.8547008547008547,
+          "logLoss": 0.49223154589082385,
+          "accuracy": 0.75,
+          "positiveRate": 0.675
+        }
+      },
+      {
+        "packetId": "6d354730-1a4d-47b9-b73d-ab0da03f5bea",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.3701298701298701,
+          "rocAuc": 0.31601731601731603,
+          "logLoss": 0.7847199606167232,
+          "accuracy": 0.425,
+          "positiveRate": 0.825
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.45670995670995673,
+          "rocAuc": 0.44155844155844154,
+          "logLoss": 0.7522410660618114,
+          "accuracy": 0.475,
+          "positiveRate": 0.825
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.4696969696969697,
+          "rocAuc": 0.48484848484848486,
+          "logLoss": 0.6342692589411176,
+          "accuracy": 0.775,
+          "positiveRate": 0.825
+        }
+      },
+      {
+        "packetId": "6d839a41-4521-496e-8c96-760602694176",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.5089514066496164,
+          "rocAuc": 0.6086956521739131,
+          "logLoss": 0.6718608296563919,
+          "accuracy": 0.55,
+          "positiveRate": 0.575
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.4501278772378517,
+          "rocAuc": 0.5601023017902813,
+          "logLoss": 0.6845647054061823,
+          "accuracy": 0.5,
+          "positiveRate": 0.575
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.5,
+          "rocAuc": 0.5959079283887468,
+          "logLoss": 0.7065403617218767,
+          "accuracy": 0.575,
+          "positiveRate": 0.575
+        }
+      },
+      {
+        "packetId": "70dccf97-b9f3-49df-a440-ac6ea134af1d",
+        "candidate": {
+          "count": 58,
+          "balancedAccuracy": 0.5067476383265856,
+          "rocAuc": 0.4885290148448043,
+          "logLoss": 0.7834616383845142,
+          "accuracy": 0.5,
+          "positiveRate": 0.6724137931034483
+        },
+        "productionArchitecture": {
+          "count": 58,
+          "balancedAccuracy": 0.558029689608637,
+          "rocAuc": 0.5573549257759784,
+          "logLoss": 0.7176294653719495,
+          "accuracy": 0.5689655172413793,
+          "positiveRate": 0.6724137931034483
+        },
+        "recordedProduction": {
+          "count": 58,
+          "balancedAccuracy": 0.4898785425101215,
+          "rocAuc": 0.5114709851551957,
+          "logLoss": 0.6649964407333409,
+          "accuracy": 0.5862068965517241,
+          "positiveRate": 0.6724137931034483
+        }
+      },
+      {
+        "packetId": "8c24cbab-0022-466d-b2a5-a03c1b9f3016",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.5601023017902813,
+          "rocAuc": 0.680306905370844,
+          "logLoss": 0.6300639813939497,
+          "accuracy": 0.6,
+          "positiveRate": 0.575
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.4936061381074169,
+          "rocAuc": 0.6956521739130435,
+          "logLoss": 0.6218498393610952,
+          "accuracy": 0.55,
+          "positiveRate": 0.575
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.5882352941176471,
+          "rocAuc": 0.7468030690537084,
+          "logLoss": 0.6068672766510876,
+          "accuracy": 0.65,
+          "positiveRate": 0.575
+        }
+      },
+      {
+        "packetId": "920f5f48-f5b6-4ef8-b55b-5b2547c112b0",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.7272727272727273,
+          "rocAuc": 0.8232323232323232,
+          "logLoss": 0.5579700695498162,
+          "accuracy": 0.75,
+          "positiveRate": 0.55
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.7828282828282829,
+          "rocAuc": 0.8207070707070707,
+          "logLoss": 0.5501009557008752,
+          "accuracy": 0.8,
+          "positiveRate": 0.55
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.5,
+          "rocAuc": 0.8308080808080808,
+          "logLoss": 0.6135948881379231,
+          "accuracy": 0.55,
+          "positiveRate": 0.55
+        }
+      },
+      {
+        "packetId": "94af35e4-cd59-4a07-aa6c-9a59945f9226",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.5441595441595442,
+          "rocAuc": 0.6068376068376068,
+          "logLoss": 0.6050850499000152,
+          "accuracy": 0.6,
+          "positiveRate": 0.675
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.4301994301994302,
+          "rocAuc": 0.5897435897435898,
+          "logLoss": 0.6172098304930302,
+          "accuracy": 0.5,
+          "positiveRate": 0.675
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.6581196581196581,
+          "rocAuc": 0.7549857549857549,
+          "logLoss": 0.5368853931686913,
+          "accuracy": 0.7,
+          "positiveRate": 0.675
+        }
+      },
+      {
+        "packetId": "95901655-fecf-42be-b3f9-109bb3007b17",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.6428571428571428,
+          "rocAuc": 0.6473214285714286,
+          "logLoss": 0.6516229718739179,
+          "accuracy": 0.6,
+          "positiveRate": 0.7
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.6488095238095238,
+          "rocAuc": 0.6473214285714286,
+          "logLoss": 0.6322138761040748,
+          "accuracy": 0.675,
+          "positiveRate": 0.7
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.6488095238095238,
+          "rocAuc": 0.7470238095238095,
+          "logLoss": 0.5251614760460621,
+          "accuracy": 0.775,
+          "positiveRate": 0.7
+        }
+      },
+      {
+        "packetId": "9a75e4d0-c0dc-4b24-9f03-d9217846dcef",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.6112531969309463,
+          "rocAuc": 0.6342710997442456,
+          "logLoss": 0.6509719153052058,
+          "accuracy": 0.65,
+          "positiveRate": 0.575
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.5524296675191815,
+          "rocAuc": 0.6163682864450127,
+          "logLoss": 0.6503901915504853,
+          "accuracy": 0.6,
+          "positiveRate": 0.575
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.5294117647058824,
+          "rocAuc": 0.6854219948849105,
+          "logLoss": 0.6715157296765264,
+          "accuracy": 0.6,
+          "positiveRate": 0.575
+        }
+      },
+      {
+        "packetId": "a1512916-4546-4110-a930-3dc1d002f857",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.48745519713261654,
+          "rocAuc": 0.4265232974910394,
+          "logLoss": 0.7468774922297954,
+          "accuracy": 0.45,
+          "positiveRate": 0.775
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.5053763440860215,
+          "rocAuc": 0.4910394265232975,
+          "logLoss": 0.6614594651210812,
+          "accuracy": 0.6,
+          "positiveRate": 0.775
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.6182795698924731,
+          "rocAuc": 0.7347670250896058,
+          "logLoss": 0.48188793416139514,
+          "accuracy": 0.775,
+          "positiveRate": 0.775
+        }
+      },
+      {
+        "packetId": "a93f8a43-327c-4746-94e4-5499b7d8d51a",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.452991452991453,
+          "rocAuc": 0.4472934472934473,
+          "logLoss": 0.7248956504561259,
+          "accuracy": 0.45,
+          "positiveRate": 0.675
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.4145299145299145,
+          "rocAuc": 0.4700854700854701,
+          "logLoss": 0.7342082198831033,
+          "accuracy": 0.425,
+          "positiveRate": 0.675
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.5997150997150997,
+          "rocAuc": 0.7806267806267806,
+          "logLoss": 0.5068313782012991,
+          "accuracy": 0.675,
+          "positiveRate": 0.675
+        }
+      },
+      {
+        "packetId": "b7c2a32c-f539-4403-93df-3ab9bfd8928f",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.6168091168091168,
+          "rocAuc": 0.6866096866096866,
+          "logLoss": 0.585550461270784,
+          "accuracy": 0.725,
+          "positiveRate": 0.675
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.6196581196581197,
+          "rocAuc": 0.6752136752136753,
+          "logLoss": 0.6020122584872417,
+          "accuracy": 0.675,
+          "positiveRate": 0.675
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.48148148148148145,
+          "rocAuc": 0.6438746438746439,
+          "logLoss": 0.6302809484391583,
+          "accuracy": 0.65,
+          "positiveRate": 0.675
+        }
+      },
+      {
+        "packetId": "bb683a43-faac-4130-a7d8-56071a095e9d",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.5698005698005698,
+          "rocAuc": 0.4601139601139601,
+          "logLoss": 0.7505502740272523,
+          "accuracy": 0.5,
+          "positiveRate": 0.675
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.6424501424501424,
+          "rocAuc": 0.6652421652421653,
+          "logLoss": 0.6549905903447957,
+          "accuracy": 0.625,
+          "positiveRate": 0.675
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.6566951566951567,
+          "rocAuc": 0.8376068376068376,
+          "logLoss": 0.48714824965494524,
+          "accuracy": 0.725,
+          "positiveRate": 0.675
+        }
+      },
+      {
+        "packetId": "d2e31290-d853-4a45-a989-873e9b7cb235",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.5319693094629157,
+          "rocAuc": 0.5831202046035806,
+          "logLoss": 0.6899528857047448,
+          "accuracy": 0.55,
+          "positiveRate": 0.575
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.6342710997442456,
+          "rocAuc": 0.7186700767263428,
+          "logLoss": 0.6344147625101436,
+          "accuracy": 0.65,
+          "positiveRate": 0.575
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.6918158567774936,
+          "rocAuc": 0.8107416879795396,
+          "logLoss": 0.5107336713209564,
+          "accuracy": 0.725,
+          "positiveRate": 0.575
+        }
+      },
+      {
+        "packetId": "d68bdfd7-7a5d-45bb-828e-f493216ee301",
+        "candidate": {
+          "count": 40,
+          "balancedAccuracy": 0.7350427350427351,
+          "rocAuc": 0.7692307692307693,
+          "logLoss": 0.6301075339610376,
+          "accuracy": 0.75,
+          "positiveRate": 0.675
+        },
+        "productionArchitecture": {
+          "count": 40,
+          "balancedAccuracy": 0.8304843304843305,
+          "rocAuc": 0.8233618233618234,
+          "logLoss": 0.5815574826031014,
+          "accuracy": 0.825,
+          "positiveRate": 0.675
+        },
+        "recordedProduction": {
+          "count": 40,
+          "balancedAccuracy": 0.7122507122507122,
+          "rocAuc": 0.6951566951566952,
+          "logLoss": 0.6586571827116281,
+          "accuracy": 0.8,
+          "positiveRate": 0.675
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "Packet UUID is an upload-batch identifier, not a guaranteed person or session identifier; grouped estimates may still leak identity across packets and be optimistic.",
+    "The grouped architecture comparison is frozen across held-out packets; recorded production predictions are prequential and therefore not directly identical protocols.",
+    "This artifact is experimental and is not wired into production inference."
+  ],
+  "runtimeSeconds": 11.547
+}

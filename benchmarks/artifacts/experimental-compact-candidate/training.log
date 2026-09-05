@@ -1,0 +1,9 @@
+source=training_sessions_rows (1).csv
+packets=23 usable=994 excluded_controls=97 excluded_collapsed=1
+candidate={"count":994,"balancedAccuracy":0.547289863658027,"rocAuc":0.5646054278447634,"logLoss":0.6818401612755958,"accuracy":0.5724346076458753,"positiveRate":0.6509054325955734}
+production_architecture={"count":994,"balancedAccuracy":0.5627458141989853,"rocAuc":0.6019402340217986,"logLoss":0.6632906425803509,"accuracy":0.5925553319919518,"positiveRate":0.6509054325955734}
+recorded_production_prequential={"count":994,"balancedAccuracy":0.5832104726313867,"rocAuc":0.6994129411293089,"logLoss":0.5957452006979889,"accuracy":0.6800804828973843,"positiveRate":0.6509054325955734}
+random={"count":994,"balancedAccuracy":0.5,"rocAuc":0.5,"logLoss":0.6931471805599324,"accuracy":0.5,"positiveRate":0.6509054325955734}
+always_a={"count":994,"balancedAccuracy":0.5,"rocAuc":0.5,"logLoss":6.430559580359963,"accuracy":0.6509054325955734,"positiveRate":0.6509054325955734}
+runtime_seconds=11.547
+status=experimental_not_promoted

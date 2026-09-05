@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "seed": 20260905,
+  "folds": 5,
+  "epochs": 18,
+  "ensembleSize": 5,
+  "architecture": [
+    6,
+    12,
+    8,
+    1
+  ],
+  "learningRate": 0.0025,
+  "inputFeatures": [
+    "lightness",
+    "chroma",
+    "chroma-conditioned sin(h)",
+    "chroma-conditioned cos(h)",
+    "chroma-conditioned sin(2h)",
+    "chroma-conditioned cos(2h)"
+  ],
+  "usesRecordedPredictionAsFeature": false,
+  "excludedPairTypes": [
+    "repeated-control"
+  ],
+  "evaluation": "packet-grouped frozen held-out predictions"
+}
