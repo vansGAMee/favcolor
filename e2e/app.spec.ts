@@ -60,6 +60,25 @@ test('mobile 390px keeps equal cards, keyboard flow, and no overflow', async ({ 
   await page.screenshot({ path: 'test-results/mobile-you.png', fullPage: true })
 })
 
+test('mobile method indicator stays inside navigation and clear of language control', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await finishDisplayCheck(page)
+  await page.getByRole('tab', { name: 'How it works' }).click()
+  await page.waitForTimeout(350)
+  const positions = await page.evaluate(() => {
+    const nav = document.querySelector('nav')!
+    const language = document.querySelector('.language-toggle')!
+    const indicator = getComputedStyle(nav, '::before')
+    const transform = new DOMMatrix(indicator.transform)
+    return {
+      indicatorRight: nav.getBoundingClientRect().left + parseFloat(indicator.left) + transform.m41 + parseFloat(indicator.width),
+      languageLeft: language.getBoundingClientRect().left,
+    }
+  })
+  expect(positions.indicatorRight).toBeLessThanOrEqual(positions.languageLeft - 4)
+})
+
 test('desktop analytics composition has no horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.goto('/')
