@@ -13,6 +13,7 @@ describe('engineering readiness', () => {
     choices.push({ ...choices[3], id: 'control-2', timestamp: 101, pairType: 'repeated-control' })
     choices.push({ ...reference, id: 'challenge', timestamp: 102, pairType: 'local-challenge', chosen: 'a' })
     expect(assessReadiness(choices, metrics, .08).state).toBe('Ready')
+    expect(assessReadiness(choices, metrics, .08, { unsupportedExtrapolation: true }).state).toBe('Testing candidate')
     expect(assessReadiness(choices, { ...metrics, foldWins: 1 }, .08).state).toBe('Testing candidate')
     expect(assessReadiness(choices.filter(x => x.pairType !== 'local-challenge'), metrics, .08).state).toBe('Testing candidate')
   })

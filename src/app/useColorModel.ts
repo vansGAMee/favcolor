@@ -38,8 +38,13 @@ function pairFor(ensemble: PreferenceEnsemble, choices: ChoiceEvent[], typeOverr
   let type: ChoiceEvent['pairType'] = typeOverride ?? 'normal'
   const canonical = ensureUsefulRenderedPair(attempt => {
     if (attempt > 0) {
-      if (type === 'repeated-control' || type === 'local-challenge') type = 'normal'
+      if (type === 'repeated-control' || type === 'local-challenge' || type === 'boundary-validation') type = 'normal'
       return selectActivePair(ensemble, pool, choices.flatMap(choice => [choice.colorA, choice.colorB]), choices.length * 7919 + 17 + attempt * 104729)
+    }
+    const optimum = searchOptimum(ensemble, 360, choices.length + 901, { choices })
+    if (optimum.boundaryValidation) {
+      type = 'boundary-validation'
+      return optimum.boundaryValidation.pair
     }
     if (choices.length > 3 && choices.length % 11 === 10) {
       const old = selectControlSource(choices)
@@ -47,7 +52,6 @@ function pairFor(ensemble: PreferenceEnsemble, choices: ChoiceEvent[], typeOverr
       return [old.colorA, old.colorB]
     }
     if (choices.length > 31 && choices.length % 13 === 12) {
-      const optimum = searchOptimum(ensemble, 360, choices.length + 901)
       type = 'local-challenge'
       return localChallenge({ l: optimum.l, c: optimum.c, h: optimum.h }, choices.length)
     }
@@ -66,6 +70,7 @@ export function useColorModel() {
   const [pair, setPair] = useState<DisplayPair>(() => pairFor(ensembleRef.current, []))
   const [estimate, setEstimate] = useState<OKLCH>(initialColor)
   const [spread, setSpread] = useState(Number.NaN)
+  const [unsupportedExtrapolation, setUnsupportedExtrapolation] = useState(false)
   const [metrics, setMetrics] = useState<ValidationMetrics | null>(null)
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState('All learning stays on this device.')
@@ -84,12 +89,13 @@ export function useColorModel() {
       if (legacyModel || checkpoint) ensembleRef.current = new PreferenceEnsemble(611, serialized as SerializedEnsemble)
       else if (storedChoices.length) ensembleRef.current.train(storedChoices.map(asTraining), 10)
       if (storedChoices.length) appStart.current = Math.min(...storedChoices.map(choice => choice.timestamp - choice.elapsedSinceStartMs))
-      const optimum = searchOptimum(ensembleRef.current, 500, storedChoices.length + 1)
+      const optimum = searchOptimum(ensembleRef.current, 500, storedChoices.length + 1, { choices: storedChoices })
       const validation = rollingValidation(storedChoices.map(asTraining))
       setChoices(storedChoices)
       setSnapshots(storedSnapshots)
       setEstimate(optimum)
       setSpread(optimum.spread)
+      setUnsupportedExtrapolation(Boolean(optimum.boundaryValidation))
       setMetrics(validation)
       if (storedChoices.length) setPair(pairFor(ensembleRef.current, storedChoices))
       if (storedChoices.length >= 100) {
@@ -124,9 +130,10 @@ export function useColorModel() {
       ensembleRef.current.train([asTraining(event)], choices.length < 20 ? 7 : 4)
       setPair(pairFor(ensembleRef.current, nextChoices))
       await new Promise<void>(resolve => setTimeout(resolve, 0))
-      const optimum = searchOptimum(ensembleRef.current, 520, nextChoices.length + 101)
+      const optimum = searchOptimum(ensembleRef.current, 520, nextChoices.length + 101, { choices: nextChoices })
       const validation = rollingValidation(nextChoices.map(asTraining))
-      const modelState = assessReadiness(nextChoices, validation, optimum.spread).state
+      const extrapolationPending = Boolean(optimum.boundaryValidation)
+      const modelState = assessReadiness(nextChoices, validation, optimum.spread, { unsupportedExtrapolation: extrapolationPending }).state
       const date = now.toLocaleDateString('en-CA')
       const snapshotColor: OKLCH = { l: optimum.l, c: optimum.c, h: optimum.h }
       const snapshot: DailySnapshot = { date, color: snapshotColor, hex: colorToHex(snapshotColor), state: modelState, totalChoices: nextChoices.length, validation }
@@ -136,6 +143,7 @@ export function useColorModel() {
       setSnapshots(nextSnapshots)
       setEstimate(optimum)
       setSpread(optimum.spread)
+      setUnsupportedExtrapolation(extrapolationPending)
       setMetrics(validation)
       void collectTrainingObservation({
         colorA: event.colorA, colorB: event.colorB, chosen: event.chosen, predictionA,
@@ -158,9 +166,9 @@ export function useColorModel() {
   }
 
   const importData = async (file: File) => { await db.importJson(await file.text()); await hydrate(); setNotice('Local archive imported.') }
-  const reset = async () => { await db.reset(); ensembleRef.current = new PreferenceEnsemble(611); appStart.current = Date.now(); setChoices([]); setSnapshots([]); setMetrics(null); setEstimate(initialColor); setSpread(Number.NaN); setPair(pairFor(ensembleRef.current, [])); setNotice('Local data reset.') }
+  const reset = async () => { await db.reset(); ensembleRef.current = new PreferenceEnsemble(611); appStart.current = Date.now(); setChoices([]); setSnapshots([]); setMetrics(null); setEstimate(initialColor); setSpread(Number.NaN); setUnsupportedExtrapolation(false); setPair(pairFor(ensembleRef.current, [])); setNotice('Local data reset.') }
 
-  const readiness = assessReadiness(choices, metrics, spread)
+  const readiness = assessReadiness(choices, metrics, spread, { unsupportedExtrapolation })
   return {
     choices, snapshots, pair, estimate, spread, metrics, busy, hydrated, notice, error, contextActive, driftActive,
     modelState: readiness.state, readiness, choose, exportData, importData, reset,

@@ -1,6 +1,6 @@
 export type OKLCH = { l: number; c: number; h: number }
 export type RGB = { r: number; g: number; b: number }
-export type PairType = 'normal' | 'repeated-control' | 'validation' | 'local-challenge'
+export type PairType = 'normal' | 'repeated-control' | 'validation' | 'local-challenge' | 'boundary-validation'
 export type ModelState = 'Learning' | 'Narrowing' | 'Testing candidate' | 'Ready'
 
 export interface ChoiceEvent {
