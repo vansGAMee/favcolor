@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { App } from '../App'
 import { ColorDatabase } from '../storage/db'
 import { DISPLAY_CHECK_KEY } from '../components/DisplayCheck'
@@ -11,6 +11,8 @@ describe('product flow', () => {
     localStorage.clear()
     localStorage.setItem(DISPLAY_CHECK_KEY, 'complete')
   })
+
+  afterEach(() => window.history.replaceState({}, '', '/'))
 
   it('records one choice without submit and advances to a new pair', async () => {
     const user = userEvent.setup()
@@ -79,10 +81,18 @@ describe('product flow', () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(await screen.findByRole('tab', { name: 'How it works' }))
-    expect(screen.getByRole('heading', { name: /how favcolor learns/i })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /how favcolor learns/i })).toBeInTheDocument()
     expect(screen.getByText('Nikolai Dubovskoy')).toBeInTheDocument()
     expect(screen.getByText('8 / 8')).toBeInTheDocument()
     expect(screen.getByText(/synthetic users are software tests/i)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /development history/i })).toBeInTheDocument()
+  })
+
+  it('opens the methodology directly from its public URL', async () => {
+    window.history.replaceState({}, '', '/how-it-works')
+    localStorage.removeItem(DISPLAY_CHECK_KEY)
+    render(<App />)
+    expect(await screen.findByRole('heading', { name: /how favcolor learns/i })).toBeInTheDocument()
+    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://favcolor-eight.vercel.app/how-it-works')
   })
 })
