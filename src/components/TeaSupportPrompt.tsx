@@ -16,7 +16,7 @@ const rememberPrompt = () => {
 
 export function TeaSupportPrompt({ choiceCount, language }: { choiceCount: number; language: Language }) {
   const [dismissed, setDismissed] = useState(promptWasSeen)
-  const eligible = choiceCount >= 300 && !dismissed
+  const eligible = choiceCount >= 250 && !dismissed
   const t = (english: string, russian: string) => translate(language, english, russian)
 
   useEffect(() => {

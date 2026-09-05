@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { App } from '../App'
 import { DISPLAY_CHECK_KEY } from '../components/DisplayCheck'
 
-const modelState = vi.hoisted(() => ({ choiceCount: 300 }))
+const modelState = vi.hoisted(() => ({ choiceCount: 250 }))
 
 vi.mock('../app/useColorModel', () => ({
   useColorModel: () => ({
@@ -55,17 +55,17 @@ describe('tea support prompt', () => {
     sessionStorage.clear()
     localStorage.setItem(DISPLAY_CHECK_KEY, 'complete')
     localStorage.setItem('favcolor-language', 'ru')
-    modelState.choiceCount = 300
+    modelState.choiceCount = 250
   })
 
-  it('appears on My color at 300 choices and stays dismissed for the session', async () => {
+  it('appears on My color at 250 choices and stays dismissed for the session', async () => {
     const user = userEvent.setup()
-    modelState.choiceCount = 299
+    modelState.choiceCount = 249
     const view = render(<App />)
     await user.click(screen.getByRole('tab', { name: 'Мой цвет' }))
     expect(screen.queryByText(/угостить проект чаем/i)).not.toBeInTheDocument()
 
-    modelState.choiceCount = 300
+    modelState.choiceCount = 250
     view.rerender(<App />)
     expect(screen.getByText(/угостить проект чаем/i)).toBeInTheDocument()
     await user.click(within(screen.getByRole('complementary', { name: 'Поддержать Favcolor' })).getByRole('button', { name: 'Не сейчас' }))
