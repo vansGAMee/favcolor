@@ -10,6 +10,7 @@ import { setTrainingSharing, trainingSharingEnabled } from './data/trainingColle
 import { parseSharedColor } from './sharing/colorShare'
 import { resultIsAvailable } from './app/resultAvailability'
 import { trackEvent } from './analytics/events'
+import { trackDonationEvent, trackPageView } from './analytics/posthog'
 import './styles.css'
 
 const READY_NOTICE_KEY = 'favcolor-ready-result-seen-v1'
@@ -31,6 +32,7 @@ export function App() {
   const [displayCheckComplete, setDisplayCheckComplete] = useState(() => localStorage.getItem(DISPLAY_CHECK_KEY) === 'complete')
   const [readyNoticeSeen, setReadyNoticeSeen] = useState(() => localStorage.getItem(READY_NOTICE_KEY) === 'seen')
   const availabilityViewTracked = useRef(false)
+  const previousTab = useRef(tab)
   const sharedHex = parseSharedColor(window.location.search)
   const t = (english: string, russian: string) => translate(language, english, russian)
   useEffect(() => {
@@ -42,6 +44,15 @@ export function App() {
     window.addEventListener('popstate', syncTabToPath)
     return () => window.removeEventListener('popstate', syncTabToPath)
   }, [])
+  useEffect(() => {
+    trackPageView()
+  }, [tab])
+  useEffect(() => {
+    if (tab === 'you' && previousTab.current !== 'you') {
+      trackDonationEvent({ name: 'result_viewed', properties: { comparisons: model.choices.length, pathname: window.location.pathname } })
+    }
+    previousTab.current = tab
+  }, [tab, model.choices.length])
   const selectTab = (nextTab: 'discover' | 'you' | 'method') => {
     setTab(nextTab)
     const nextPath = nextTab === 'method' ? METHOD_PATH : '/'

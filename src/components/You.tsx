@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import type { ReturnTypeOfColorModel } from './types'
 import { colorCss, colorToHex } from '../color/color'
 import { HistoryGrid } from './HistoryGrid'
@@ -9,6 +9,7 @@ import { shareColor } from '../sharing/colorShare'
 import { resultIsAvailable } from '../app/resultAvailability'
 import { trackEvent } from '../analytics/events'
 import { TeaSupportPrompt } from './TeaSupportPrompt'
+import { trackDonationEvent } from '../analytics/posthog'
 
 const TEA_URL = 'https://pay.cloudtips.ru/p/1c756a9c'
 
@@ -17,6 +18,8 @@ const metric = (value: number | undefined, format = (x: number) => x.toFixed(3))
 export function You({ model, language, sharing, onSharingChange, onRecheckDisplay }: { model: ReturnTypeOfColorModel; language: Language; sharing: boolean; onSharingChange: (enabled: boolean) => void; onRecheckDisplay: () => void }) {
   const t = (english: string, russian: string) => translate(language, english, russian)
   const input = useRef<HTMLInputElement>(null)
+  const inlineTea = useRef<HTMLParagraphElement>(null)
+  const inlineTeaSeen = useRef(false)
   const enough = (model.metrics?.count ?? 0) >= 8
   const estimateHex = colorToHex(model.estimate)
   const stable = model.modelState === 'Ready'
@@ -24,6 +27,21 @@ export function You({ model, language, sharing, onSharingChange, onRecheckDispla
   const accuracy = enough && model.metrics?.accuracy !== undefined ? model.metrics.accuracy : null
   const loss = enough && model.metrics?.logLoss !== undefined ? model.metrics.logLoss : null
   const [shareStatus, setShareStatus] = useState('')
+  useEffect(() => {
+    const element = inlineTea.current
+    if (!resultAvailable || !element || inlineTeaSeen.current) return
+    const seen = () => {
+      if (inlineTeaSeen.current) return
+      inlineTeaSeen.current = true
+      trackDonationEvent({ name: 'support_seen', properties: { location: 'result_card', comparisons: model.choices.length, pathname: window.location.pathname } })
+    }
+    if (!('IntersectionObserver' in window)) { seen(); return }
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) { seen(); observer.disconnect() }
+    }, { threshold: 0.25 })
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [resultAvailable, model.choices.length])
   const shareResult = async () => {
     try {
       const status = await shareColor(estimateHex, t('My Favcolor result', 'Мой результат Favcolor'), t(`My color is ${estimateHex}`, `Мой цвет — ${estimateHex}`))
@@ -37,7 +55,7 @@ export function You({ model, language, sharing, onSharingChange, onRecheckDispla
         <div className="estimate-topline"><span>{stable ? t('Stable digital estimate', 'Стабильная цифровая оценка') : t('Current digital estimate', 'Текущая цифровая оценка')}</span><span className="state-pill"><i />{stateLabel(model.modelState, language)}</span></div>
         <div className="estimate-swatch" style={{ backgroundColor: colorCss(model.estimate) }}><span>{stable ? t('Your current color', 'Ваш текущий цвет') : t('Still learning', 'Ещё изучаем')}</span></div>
         {!stable && resultAvailable && <p className="current-result-note">{t('This is already your current result. New answers will refine the shade.', 'Это уже ваш текущий результат. Новые ответы будут уточнять оттенок.')}</p>}
-        <div className="estimate-details"><div><p className="eyebrow">{t('Current color', 'Текущий цвет')}</p><div className="estimate-hex">{estimateHex}</div><button className="share-result" onClick={() => void shareResult()}>{t('Share', 'Поделиться')}</button><span className="share-status" role="status">{shareStatus}</span>{resultAvailable && <p className="inline-tea">{t('If the result matches your taste, you can buy the author a tea.', 'Если результат попал в ваш вкус, можно угостить автора чаем.')} <a href={TEA_URL} target="_blank" rel="noreferrer" onClick={() => trackEvent('tea_inline_click')}>{t('Buy tea', 'На чай')}</a></p>}</div><div className="oklch"><span>OKLCH</span><strong>{model.estimate.l.toFixed(3)}</strong><strong>{model.estimate.c.toFixed(3)}</strong><strong>{Math.round(model.estimate.h)}°</strong></div></div>
+        <div className="estimate-details"><div><p className="eyebrow">{t('Current color', 'Текущий цвет')}</p><div className="estimate-hex">{estimateHex}</div><button className="share-result" onClick={() => void shareResult()}>{t('Share', 'Поделиться')}</button><span className="share-status" role="status">{shareStatus}</span>{resultAvailable && <p ref={inlineTea} className="inline-tea">{t('If the result matches your taste, you can buy the author a tea.', 'Если результат попал в ваш вкус, можно угостить автора чаем.')} <a href={TEA_URL} target="_blank" rel="noreferrer" onClick={() => { trackEvent('tea_inline_click'); trackDonationEvent({ name: 'support_clicked', properties: { location: 'result_card', comparisons: model.choices.length, pathname: window.location.pathname } }) }}>{t('Buy tea', 'На чай')}</a></p>}</div><div className="oklch"><span>OKLCH</span><strong>{model.estimate.l.toFixed(3)}</strong><strong>{model.estimate.c.toFixed(3)}</strong><strong>{Math.round(model.estimate.h)}°</strong></div></div>
       </article>
       <section className="learning-panel" aria-labelledby="learning-title">
         <div className="section-heading compact-heading"><div><p className="eyebrow">{t('Based on real answers', 'По реальным ответам')}</p><h2 id="learning-title">{t('How well it knows you', 'Насколько модель вас понимает')}</h2></div><span>{t('In order · On device', 'По порядку · На устройстве')}</span></div>
