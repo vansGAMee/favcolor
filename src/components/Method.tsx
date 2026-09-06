@@ -169,7 +169,6 @@ export function Method({ language }: { language: Language }) {
       <main ref={root} className="method-page" id="method-panel" role="tabpanel" aria-labelledby="method-tab">
         <MethodSeo language={language} />
 
-        {/* Hero Section: OpenAI Astra-inspired Cosmic Galaxy + Stardust Architecture */}
         <section className="method-hero">
           <div className="method-hero-main">
             <div className="method-hero-copy">
@@ -188,7 +187,6 @@ export function Method({ language }: { language: Language }) {
               </p>
             </div>
 
-            {/* Grand Interactive Cosmic Galaxy (Astra style) */}
             <div className="method-hero-galaxy-wrap method-reveal">
               <CosmicGalaxy interactive={true} />
               <div className="method-galaxy-caption">
@@ -231,11 +229,9 @@ export function Method({ language }: { language: Language }) {
               </div>
               <button className="method-signal-button" type="button" onClick={playSignal}>
                 {t('Send one choice through the network', 'Пропустить один выбор через сеть')}
-                <span aria-hidden="true">→</span>
               </button>
             </div>
 
-            {/* OpenAI Astra-style Companion Science Card */}
             <CosmicStarfieldCard
               className="method-companion-card"
               imageSrc="/method/cosmic-cluster.jpg"
@@ -394,7 +390,6 @@ export function Method({ language }: { language: Language }) {
               <div><strong>0 / 16</strong><span>{t('false drift activations', 'ложных включений дрейфа')}</span></div>
               <p>{t('Untouched null and stable seeds. Weak effects are missed more often than false effects are announced.', 'Нетронутые null и stable seed. Слабый эффект чаще пропускается, чем объявляется ложный.')}</p>
             </article>
-            {/* Deep Space Celestial Boundary Card */}
             <article className="method-integrity-card method-integrity-space">
               <img src="/method/deep-field-nebula.jpg" alt={t('Deep space boundary', 'Граница глубокого космоса')} className="integrity-space-img" loading="lazy" />
               <div className="integrity-space-content">
@@ -469,7 +464,7 @@ export function Method({ language }: { language: Language }) {
           <div className="method-boundary-main">
             <h2>{t('A useful estimate. Not an absolute truth.', 'Полезная оценка. Не абсолютная истина.')}</h2>
             <p>{t('“Your color” is the model’s current best estimate under this pairwise procedure. It is not a diagnosis, a personality type, or proof of one permanent favorite.', '«Ваш цвет» - текущая лучшая оценка модели в рамках парных сравнений. Это не диагноз, не тип личности и не доказательство одного вечного любимого цвета.')}</p>
-            <a href="/">{t('Try it with your own choices', 'Проверить на своих выборах')}<span aria-hidden="true">→</span></a>
+            <a href="/">{t('Try it with your own choices', 'Проверить на своих выборах')}</a>
           </div>
           <div className="method-boundary-notes">
             <p>{t('Screens, brightness, color profiles, ambient light, and fatigue can change appearance and choice.', 'Экран, яркость, цветовой профиль, освещение и усталость могут менять вид цвета и выбор.')}</p>

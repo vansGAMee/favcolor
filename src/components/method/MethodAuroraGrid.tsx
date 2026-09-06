@@ -197,15 +197,6 @@ export function MethodAuroraGrid({ className = '', interactive = true }: AuroraG
 
   return (
     <div ref={containerRef} className={`method-aurora-container ${className}`} aria-hidden="true">
-      {/* Organic Northern Lights (Aurora Borealis) ambient glow layers */}
-      <div className="aurora-ambient-root">
-        <div className="aurora-wave aurora-wave-violet" />
-        <div className="aurora-wave aurora-wave-teal" />
-        <div className="aurora-wave aurora-wave-indigo" />
-        <div className="aurora-radial-soft" />
-      </div>
-
-      {/* Stardust dot-matrix canvas */}
       <canvas ref={canvasRef} className="aurora-dots-canvas" />
     </div>
   )
