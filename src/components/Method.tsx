@@ -174,7 +174,6 @@ export function Method({ language }: { language: Language }) {
           <div className="method-hero-main">
             <div className="method-hero-copy">
               <div className="method-kicker-badge">
-                <span className="cosmic-sparkle-dot" aria-hidden="true" />
                 <p className="eyebrow">{t('Local neural preference learning', 'Локальное обучение предпочтениям')}</p>
               </div>
               <h1 aria-label={t('How Favcolor learns your color', 'Как Favcolor изучает ваш цвет')}>
@@ -197,8 +196,8 @@ export function Method({ language }: { language: Language }) {
                   <span className="caption-tag">OKLCH</span>
                   <p>
                     {t(
-                      'Logarithmic manifold convergence guided by five local neural networks. Switch modes above to compare with the empirical color space path.',
-                      'Логарифмическая спираль схождения в пространстве OKLCH. Переключайте вид выше, чтобы сравнить с эмпирической траекторией в облаке цветов.'
+                      'This view shows how five local neural networks compare colors and gradually refine the result. The controls above switch between the model view, a reference image, and the color path.',
+                      'Здесь видно, как пять локальных нейросетей сравнивают цвета и постепенно уточняют результат. Выше можно переключить вид модели, исходное изображение и путь цвета.'
                     )}
                   </p>
                 </div>
@@ -243,8 +242,8 @@ export function Method({ language }: { language: Language }) {
               alt={t('Astronomical star cluster', 'Звёздное скопление')}
             >
               <div className="method-companion-body">
-                <span className="method-companion-badge">{t('Deterministic Benchmark', 'Детерминированный тест')}</span>
-                <h3>{t('Zero cloud requests. Pure on-device convergence.', 'Ноль облачных запросов. Полная локальная сходимость.')}</h3>
+                <p className="method-companion-badge">{t('Deterministic benchmark', 'Детерминированный тест')}</p>
+                <h3>{t('The benchmark runs locally without cloud requests.', 'Тест выполняется локально и не обращается к облаку.')}</h3>
                 <div className="method-companion-metrics">
                   <div>
                     <strong>100%</strong>
@@ -362,7 +361,6 @@ export function Method({ language }: { language: Language }) {
         {/* Integrity Section: The useful history is where it broke */}
         <section className="method-integrity method-reveal">
           <header>
-            <p className="eyebrow">{t('Failure log', 'Журнал ошибок')}</p>
             <h2>{t('The useful history is where it broke.', 'Самая полезная история - где всё ломалось.')}</h2>
           </header>
           <div className="method-integrity-grid">
@@ -400,7 +398,6 @@ export function Method({ language }: { language: Language }) {
             <article className="method-integrity-card method-integrity-space">
               <img src="/method/deep-field-nebula.jpg" alt={t('Deep space boundary', 'Граница глубокого космоса')} className="integrity-space-img" loading="lazy" />
               <div className="integrity-space-content">
-                <span className="eyebrow">{t('Perceptual boundary', 'Границы восприятия')}</span>
                 <h4>{t('Untestable extremes rejected', 'Непроверенные границы отклонены')}</h4>
                 <p>{t('The model ceases rewarding high-saturation extremes that the user never compared.', 'Поиск перестал награждать крайние области, которые пользователь ни разу содержательно не сравнивал.')}</p>
               </div>
@@ -432,11 +429,7 @@ export function Method({ language }: { language: Language }) {
                 <s>{row.candidate}</s>
               </div>
             ))}
-            <p>
-              <i />
-              {t('Not promoted', 'Не внедрена')}
-              <small>{t('Packet UUID may not equal one human. Grouped estimates can be optimistic.', 'UUID пакета может не соответствовать одному человеку. Групповые оценки могут быть оптимистичными.')}</small>
-            </p>
+            <p><strong>{t('Not promoted.', 'Не внедрена.')}</strong> {t('Packet UUID may not equal one human. Grouped estimates can be optimistic.', 'UUID пакета может не соответствовать одному человеку. Групповые оценки могут быть оптимистичными.')}</p>
           </div>
         </section>
 
@@ -461,16 +454,12 @@ export function Method({ language }: { language: Language }) {
 
         {/* Display Honesty Section: Macro RGB Subpixels */}
         <section className="method-display-visual method-reveal">
-          <div className="method-display-image-wrap">
+          <figure className="method-display-image-wrap">
             <img src="/method/display-pixels.png" alt={t('Macro view of RGB display pixels blending into a continuous color', 'Макросъёмка RGB-пикселей экрана, переходящих в непрерывный цвет')} width="1536" height="1024" loading="lazy" />
-            <div className="method-display-badge">
-              <span className="display-badge-dot" />
-              <span>OLED / Quantum Dot subpixel matrix</span>
-            </div>
-          </div>
+            <figcaption className="method-display-badge">OLED / Quantum Dot subpixel matrix</figcaption>
+          </figure>
           <div>
-            <p className="eyebrow">{t('Displayed, not imagined', 'Показано, а не придумано')}</p>
-            <h2>{t('The screen is part of the experiment.', 'Экран — часть эксперимента.')}</h2>
+            <h2>{t('The screen is part of the experiment.', 'Экран тоже участвует в эксперименте.')}</h2>
             <p>{t('The model works in a perceptual color space, but every comparison is validated after conversion to the pixels your display can actually render.', 'Модель работает в перцептивном цветовом пространстве, но каждая пара проверяется после преобразования в пиксели, которые действительно может показать экран.')}</p>
           </div>
         </section>

@@ -342,8 +342,7 @@ export function CosmicGalaxy({
       {/* Control overlay & mode selector */}
       <div className="cosmic-galaxy-controls">
         <div className="cosmic-galaxy-tag">
-          <span className="cosmic-galaxy-pulse" />
-          <span className="cosmic-galaxy-label">OKLCH Manifold Convergence</span>
+          <span className="cosmic-galaxy-label">OKLCH search space</span>
         </div>
         <div className="cosmic-mode-pills" role="tablist" aria-label="Visualizer view modes">
           <button
@@ -353,7 +352,7 @@ export function CosmicGalaxy({
             className={`cosmic-mode-btn ${activeMode === 'galaxy' ? 'is-active' : ''}`}
             onClick={() => setActiveMode('galaxy')}
           >
-            Cosmic Spiral
+            Model view
           </button>
           <button
             type="button"
@@ -362,7 +361,7 @@ export function CosmicGalaxy({
             className={`cosmic-mode-btn ${activeMode === 'real' ? 'is-active' : ''}`}
             onClick={() => setActiveMode('real')}
           >
-            Deep Cosmos
+            Reference image
           </button>
           <button
             type="button"
