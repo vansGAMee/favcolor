@@ -53,5 +53,5 @@ export const trackPageView = () => {
 
 export const trackDonationEvent = ({ name, properties }: DonationEvent) => {
   if (!posthog.__loaded) return
-  posthog.capture(name, properties)
+  posthog.capture(name, properties, name === 'support_clicked' ? { send_instantly: true } : undefined)
 }
