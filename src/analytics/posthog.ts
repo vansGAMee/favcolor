@@ -8,6 +8,12 @@ type DonationEvent =
   | { name: 'support_250_shown'; properties: { comparisons: number; pathname: string } }
   | { name: 'result_viewed'; properties: { comparisons: number; pathname: string } }
 
+type FullStatsEvent =
+  | { name: 'full_stats_opened'; properties: { comparisons: number; pathname: string } }
+  | { name: 'full_stats_support_shown'; properties: { comparisons: number; pathname: string } }
+  | { name: 'full_stats_support_clicked'; properties: { option: '100' | 'other'; comparisons: number; pathname: string } }
+  | { name: 'full_stats_support_dismissed'; properties: { reason: 'skip' | 'escape' | 'backdrop'; comparisons: number; pathname: string } }
+
 const stripQuery = (value: unknown) => {
   if (typeof value !== 'string') return value
   try {
@@ -54,4 +60,9 @@ export const trackPageView = () => {
 export const trackDonationEvent = ({ name, properties }: DonationEvent) => {
   if (!posthog.__loaded) return
   posthog.capture(name, properties, name === 'support_clicked' ? { send_instantly: true } : undefined)
+}
+
+export const trackFullStatsEvent = ({ name, properties }: FullStatsEvent) => {
+  if (!posthog.__loaded) return
+  posthog.capture(name, properties, name === 'full_stats_support_clicked' ? { send_instantly: true } : undefined)
 }

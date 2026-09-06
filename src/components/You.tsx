@@ -10,6 +10,7 @@ import { resultIsAvailable } from '../app/resultAvailability'
 import { trackEvent } from '../analytics/events'
 import { TeaSupportPrompt } from './TeaSupportPrompt'
 import { trackDonationEvent } from '../analytics/posthog'
+import { AllColorsAnalytics } from './AllColorsAnalytics'
 
 const TEA_URL = 'https://pay.cloudtips.ru/p/1c756a9c'
 
@@ -71,6 +72,7 @@ export function You({ model, language, sharing, onSharingChange, onRecheckDispla
       </section>
     </section>
     <TeaSupportPrompt choiceCount={model.choices.length} language={language} />
+    <AllColorsAnalytics choices={model.choices} language={language} primaryColor={model.estimate} />
     <TastePortrait choices={model.choices} language={language} accent={estimateHex} />
     <section className="insights-grid"><HistoryGrid snapshots={model.snapshots} language={language} /><EvolutionChart snapshots={model.snapshots} language={language} /></section>
     <section className="data-panel">

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { App } from '../App'
 import { DISPLAY_CHECK_KEY } from '../components/DisplayCheck'
 
-const analytics = vi.hoisted(() => ({ trackDonationEvent: vi.fn(), trackPageView: vi.fn() }))
+const analytics = vi.hoisted(() => ({ trackDonationEvent: vi.fn(), trackFullStatsEvent: vi.fn(), trackPageView: vi.fn() }))
 
 vi.mock('../analytics/posthog', () => analytics)
 vi.mock('../app/useColorModel', () => ({
@@ -27,6 +27,7 @@ describe('donation analytics', () => {
   beforeEach(() => {
     analytics.trackDonationEvent.mockClear()
     analytics.trackPageView.mockClear()
+    analytics.trackFullStatsEvent.mockClear()
     localStorage.clear()
     sessionStorage.clear()
     localStorage.setItem(DISPLAY_CHECK_KEY, 'complete')
@@ -37,7 +38,6 @@ describe('donation analytics', () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(screen.getByRole('tab', { name: 'Мой цвет' }))
-
     expect(analytics.trackDonationEvent).toHaveBeenCalledWith({
       name: 'result_viewed', properties: { comparisons: 250, pathname: '/' },
     })
