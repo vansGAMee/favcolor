@@ -428,6 +428,73 @@ export function Method({ language }: { language: Language }) {
           </div>
         </section>
 
+        <section className="method-research method-reveal" aria-labelledby="method-research-title">
+          <header className="method-research-intro">
+            <h2 id="method-research-title">{t('What users choose', 'Что выбирают пользователи')}</h2>
+            <p>
+              {t(
+                'Anonymous comparisons reveal more than one personal result. Once enough data accumulates, they can form a shared map of color preference.',
+                'Анонимные сравнения позволяют смотреть не только на отдельный результат. Когда данных становится достаточно, из них можно построить общую карту цветовых предпочтений.'
+              )}
+            </p>
+          </header>
+
+          <figure className="method-research-figure">
+            <a href="/method/preference-research/least-preferred-atlas.png" target="_blank" rel="noreferrer" aria-label={t('Open the full-size map of less preferred colors', 'Открыть полноразмерную карту наименее предпочитаемых цветов')}>
+              <img src="/method/preference-research/least-preferred-atlas.png" width="1600" height="1160" loading="lazy" decoding="async" alt={t('OKLCH map showing colors that received lower preference scores in the user sample', 'Карта OKLCH с цветами, получившими более низкие оценки в пользовательской выборке')} />
+            </a>
+            <figcaption>
+              <strong>{t('Map of less preferred colors', 'Карта наименее предпочитаемых цветов')}</strong>
+              <span>{t('Larger marks indicate colors that consistently lost comparisons across five models. Tap the chart to inspect it at full size.', 'Более крупные отметки показывают цвета, которые устойчиво проигрывали сравнения по оценке пяти моделей. Нажмите на график, чтобы открыть его полностью.')}</span>
+            </figcaption>
+          </figure>
+
+          <p className="method-research-bridge">
+            {t(
+              'One of the most consistently low-scoring regions currently lies near yellow-orange shades. The analysis also separates low preference from regions where the sample is still sparse.',
+              'Сейчас одна из самых устойчиво слабых областей находится около жёлто-оранжевых оттенков. В анализе важно отделять реальное низкое предпочтение от областей, где просто мало данных.'
+            )}
+          </p>
+
+          <div className="method-research-figures">
+            <figure className="method-research-figure">
+              <a href="/method/preference-research/least-preferred-regions.png" target="_blank" rel="noreferrer" aria-label={t('Open the full-size chart of consistently low-scoring regions', 'Открыть полноразмерный график устойчиво слабых областей')}>
+                <img src="/method/preference-research/least-preferred-regions.png" width="1600" height="1030" loading="lazy" decoding="async" alt={t('Six separated color regions ranked by low preference score and model agreement', 'Шесть отдельных цветовых областей с низкой оценкой предпочтения и согласованностью моделей')} />
+              </a>
+              <figcaption>
+                <strong>{t('Consistently low-scoring regions', 'Устойчиво наименее предпочитаемые области')}</strong>
+                <span>{t('The ranking includes disagreement between models. A lower upper bound means the result is more stable.', 'Рейтинг учитывает расхождение между моделями. Чем ниже верхняя граница, тем устойчивее результат.')}</span>
+              </figcaption>
+            </figure>
+
+            <figure className="method-research-figure">
+              <a href="/method/preference-research/least-preferred-dimensions.png" target="_blank" rel="noreferrer" aria-label={t('Open the full-size hue, lightness and chroma charts', 'Открыть полноразмерные графики тона, светлоты и насыщенности')}>
+                <img src="/method/preference-research/least-preferred-dimensions.png" width="1600" height="1140" loading="lazy" decoding="async" alt={t('Preference score curves by OKLCH hue, lightness and chroma', 'Графики оценки предпочтения по тону, светлоте и насыщенности OKLCH')} />
+              </a>
+              <figcaption>
+                <strong>{t('Hue, lightness and chroma', 'Тон, светлота и насыщенность')}</strong>
+                <span>{t('These curves show which dimensions contribute to a lower score. The shaded band is the spread across five models.', 'Кривые показывают, какие характеристики связаны с более низкой оценкой. Затемнённая полоса показывает разброс между пятью моделями.')}</span>
+              </figcaption>
+            </figure>
+
+            <figure className="method-research-figure">
+              <a href="/method/preference-research/preference-vs-uncertainty.png" target="_blank" rel="noreferrer" aria-label={t('Open the full-size preference and uncertainty chart', 'Открыть полноразмерный график предпочтения и неопределённости')}>
+                <img src="/method/preference-research/preference-vs-uncertainty.png" width="1600" height="980" loading="lazy" decoding="async" alt={t('Scatter plot comparing preference score with disagreement between models', 'Диаграмма оценки предпочтения и расхождения между моделями')} />
+              </a>
+              <figcaption>
+                <strong>{t('Low preference or too little data?', 'Нелюбимый цвет или недостаток данных')}</strong>
+                <span>{t('Points in the lower-left have both a low score and strong agreement. Higher points need more evidence.', 'Точки слева внизу сочетают низкую оценку и согласие моделей. Для точек выше нужно больше данных.')}</span>
+              </figcaption>
+            </figure>
+          </div>
+
+          <p className="method-research-source">
+            {t('The model and analysis code are open on ', 'Код модели и анализа открыт на ')}
+            <a href="https://github.com/vansGAMee/favcolor" target="_blank" rel="noreferrer">GitHub</a>
+            {t(', so the method and findings can be checked.', ', поэтому методику и выводы можно проверить.')}
+          </p>
+        </section>
+
         {/* History Section: Built by correcting itself */}
         <section className="method-history method-reveal" id="method-history">
           <header>
