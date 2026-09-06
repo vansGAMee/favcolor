@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ChoiceEvent, OKLCH } from '../app/types'
 import { buildColorAtlas, buildFavoriteColors } from '../analytics/colorAtlas'
 import { AllColorsAnalytics } from '../components/AllColorsAnalytics'
@@ -22,6 +22,7 @@ const choices = [
 ]
 
 describe('all-color statistics', () => {
+  afterEach(() => vi.restoreAllMocks())
   beforeEach(() => {
     localStorage.clear()
     analytics.trackFullStatsEvent.mockClear()
@@ -69,10 +70,24 @@ describe('all-color statistics', () => {
     expect(analytics.trackFullStatsEvent).toHaveBeenCalledWith({ name: 'full_stats_support_dismissed', properties: { reason: 'skip', comparisons: 4, pathname: '/' } })
   })
 
+  it('shows support only after the unlocked report has rendered successfully', async () => {
+    const frames: FrameRequestCallback[] = []
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { frames.push(callback); return frames.length })
+    render(<AllColorsAnalytics choices={choices} language="ru" />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Открыть полный разбор бесплатно' }))
+    expect(screen.getByRole('region', { name: 'Статистика по всем цветам' })).toBeVisible()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    await act(async () => { frames.splice(0).forEach(callback => callback(performance.now())) })
+    expect(screen.getByRole('dialog', { name: 'Статистика готова' })).toBeVisible()
+  })
+
   it('does not show the support dialog again and closes it with Escape when first shown', async () => {
     const user = userEvent.setup()
     const first = render(<AllColorsAnalytics choices={choices} language="ru" openSignal={0} />)
     await user.click(screen.getByRole('button', { name: 'Открыть полный разбор бесплатно' }))
+    await screen.findByRole('dialog', { name: 'Статистика готова' })
     await user.keyboard('{Escape}')
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     first.unmount()
@@ -87,7 +102,7 @@ describe('all-color statistics', () => {
     render(<AllColorsAnalytics choices={choices} language="ru" openSignal={0} />)
     await user.click(screen.getByRole('button', { name: 'Открыть полный разбор бесплатно' }))
 
-    const fixed = screen.getByRole('link', { name: 'Поддержать на 100 ₽' })
+    const fixed = await screen.findByRole('link', { name: 'Поддержать на 100 ₽' })
     const other = screen.getByRole('link', { name: 'Другая сумма' })
     expect(fixed).toHaveAttribute('href', 'https://pay.cloudtips.ru/p/1c756a9c')
     expect(other).toHaveAttribute('href', 'https://pay.cloudtips.ru/p/1c756a9c')
@@ -99,10 +114,10 @@ describe('all-color statistics', () => {
     expect(JSON.stringify(analytics.trackFullStatsEvent.mock.calls)).not.toMatch(/#[0-9a-f]{6}|oklch|colorA|colorB/i)
   })
 
-  it('opens immediately when the visible result-card action requests the report', () => {
+  it('opens the report immediately and support after the report renders', async () => {
     const view = render(<AllColorsAnalytics choices={choices} language="ru" openSignal={0} />)
     view.rerender(<AllColorsAnalytics choices={choices} language="ru" openSignal={1} />)
     expect(screen.getByRole('region', { name: 'Статистика по всем цветам' })).toBeVisible()
-    expect(screen.getByRole('dialog', { name: 'Статистика готова' })).toBeVisible()
+    expect(await screen.findByRole('dialog', { name: 'Статистика готова' })).toBeVisible()
   })
 })

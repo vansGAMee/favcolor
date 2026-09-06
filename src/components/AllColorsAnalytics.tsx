@@ -14,6 +14,7 @@ export function AllColorsAnalytics({ choices, language, openSignal = 0, primaryC
   const t = (en: string, ru: string) => translate(language, en, ru)
   const [unlocked, setUnlocked] = useState(() => stored(UNLOCKED_KEY))
   const [supportOpen, setSupportOpen] = useState(false)
+  const [supportPending, setSupportPending] = useState(false)
   const region = useRef<HTMLDivElement>(null)
   const closeButton = useRef<HTMLButtonElement>(null)
   const previousSignal = useRef(openSignal)
@@ -28,9 +29,7 @@ export function AllColorsAnalytics({ choices, language, openSignal = 0, primaryC
     remember(UNLOCKED_KEY)
     trackFullStatsEvent({ name: 'full_stats_opened', properties })
     if (!stored(SUPPORT_SEEN_KEY)) {
-      remember(SUPPORT_SEEN_KEY)
-      setSupportOpen(true)
-      trackFullStatsEvent({ name: 'full_stats_support_shown', properties })
+      setSupportPending(true)
     }
     focusReport()
   }, [focusReport, properties])
@@ -45,6 +44,17 @@ export function AllColorsAnalytics({ choices, language, openSignal = 0, primaryC
     previousSignal.current = openSignal
     unlock()
   }, [openSignal, unlock])
+  useEffect(() => {
+    if (!unlocked || !supportPending || !region.current) return
+    const frame = requestAnimationFrame(() => {
+      if (!region.current?.isConnected) return
+      remember(SUPPORT_SEEN_KEY)
+      setSupportPending(false)
+      setSupportOpen(true)
+      trackFullStatsEvent({ name: 'full_stats_support_shown', properties })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [properties, supportPending, unlocked])
   useEffect(() => {
     if (!supportOpen) return
     closeButton.current?.focus()
