@@ -3,6 +3,7 @@ import type { ChoiceEvent, OKLCH } from '../app/types'
 import { translate, type Language } from '../app/i18n'
 import { buildColorAtlas, type ColorShadeStats } from '../analytics/colorAtlas'
 import { trackFullStatsEvent } from '../analytics/posthog'
+import { YandexAd } from './YandexAd'
 
 const UNLOCKED_KEY = 'favcolor-full-stats-unlocked-v3'
 const SUPPORT_SEEN_KEY = 'favcolor-full-stats-support-seen-v3'
@@ -105,6 +106,7 @@ export function AllColorsAnalytics({ choices, language, openSignal = 0, primaryC
           <div className="shade-section-heading"><h3>{t('Shades you passed over', 'Оттенки, которые уступали')}</h3><span>{t('Shown but not selected yet', 'Показывались, но пока не выбирались')}</span></div>
           <div className="shade-grid">{atlas.rejectedShades.slice(0, 8).map(shade => <Shade key={shade.hex} shade={shade} />)}</div>
         </section>}
+        <YandexAd language={language} />
         <p className="atlas-method">{t('Percentages refer to the exact rendered HEX. Colors that look identical on screen are counted as one shade.', 'Проценты относятся к точному HEX на экране. Одинаково выглядящие цвета считаются одним оттенком.')}</p>
       </div>}
     </section>

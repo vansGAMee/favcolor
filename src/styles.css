@@ -509,6 +509,10 @@ nav button[aria-selected="true"]::after { content: ""; position: absolute; left:
 .recent-shades span { aspect-ratio: 1; min-width: 0; border: 1px solid rgba(255,255,255,.15); border-radius: 7px; }
 .shade-empty { margin: 0; color: var(--muted); font-size: 10px; }
 .atlas-method { max-width: 78ch; margin: 18px 0 0; color: var(--muted-2); font-size: 8px; line-height: 1.55; }
+.report-ad { display: none; margin: 30px 0 0; padding-top: 17px; border-top: 1px solid var(--line); }
+.report-ad.is-filled { display: block; }
+.report-ad > p { margin: 0 0 12px; color: var(--muted-2); font-size: 8px; line-height: 1.45; }
+.report-ad > div { width: 100%; overflow: hidden; }
 .full-stats-backdrop { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(0,0,0,.64); backdrop-filter: blur(7px); animation: notice-in 180ms ease both; }
 .full-stats-support { position: relative; width: min(440px, 100%); padding: 29px; border: 1px solid rgba(255,255,255,.16); border-radius: 19px; background: #151518; box-shadow: 0 30px 90px rgba(0,0,0,.62), inset 0 1px rgba(255,255,255,.045); }
 .full-stats-support h2 { max-width: 350px; margin: 0; font-size: 28px; line-height: 1.05; letter-spacing: -.04em; font-weight: 610; }

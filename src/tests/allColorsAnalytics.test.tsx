@@ -26,6 +26,7 @@ describe('all-color statistics', () => {
   beforeEach(() => {
     localStorage.clear()
     analytics.trackFullStatsEvent.mockClear()
+    window.yaContextCb = []
   })
 
   it('summarizes every color family from cross-family choices without treating same-family pairs as wins', () => {
@@ -119,5 +120,15 @@ describe('all-color statistics', () => {
     view.rerender(<AllColorsAnalytics choices={choices} language="ru" openSignal={1} />)
     expect(screen.getByRole('region', { name: 'Статистика по всем цветам' })).toBeVisible()
     expect(await screen.findByRole('dialog', { name: 'Статистика готова' })).toBeVisible()
+  })
+
+  it('does not request advertising before the free report is opened', async () => {
+    const user = userEvent.setup()
+    render(<AllColorsAnalytics choices={choices} language="ru" />)
+    expect(window.yaContextCb).toHaveLength(0)
+
+    await user.click(screen.getByRole('button', { name: 'Открыть полный разбор бесплатно' }))
+    expect(window.yaContextCb).toHaveLength(1)
+    expect(document.querySelector('#yandex_rtb_R-A-19998600-1')).toBeInTheDocument()
   })
 })
